@@ -6,7 +6,7 @@ import { Button } from '../ui/Button';
 import { supabase, Parish } from '../../lib/supabase';
 
 interface HistorySectionProps {
-  onBack?: () => void;
+  onBack: () => void;
 }
 
 export const HistorySection: React.FC<HistorySectionProps> = ({ onBack }) => {
@@ -57,12 +57,10 @@ export const HistorySection: React.FC<HistorySectionProps> = ({ onBack }) => {
 
   if (isLoading) {
     return (
-      <section id="history" className="py-20 bg-gradient-to-b from-white to-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-800 mx-auto mb-4"></div>
-            <p className="text-gray-600">Carregando história...</p>
-          </div>
+      <section id="history" className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-800 mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando história...</p>
         </div>
       </section>
     );
@@ -70,7 +68,7 @@ export const HistorySection: React.FC<HistorySectionProps> = ({ onBack }) => {
 
   if (!parish) {
     return (
-      <section id="history" className="py-20 bg-gradient-to-b from-white to-gray-50">
+      <section id="history" className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Card className="p-12 text-center">
             <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -89,203 +87,200 @@ export const HistorySection: React.FC<HistorySectionProps> = ({ onBack }) => {
   const historyParagraphs = parish.history.split('\n').filter(p => p.trim());
 
   return (
-    <section id="history" className="py-20 bg-gradient-to-b from-white to-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {onBack && (
-          <div className="mb-8">
-            <Button
-              variant="outline"
-              onClick={onBack}
-              className="flex items-center gap-2 mb-4"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Voltar ao Início
-            </Button>
-          </div>
-        )}
-
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent" style={{
-            background: 'linear-gradient(to right, var(--color-primary-from), var(--color-secondary-from))',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text'
-          }}>
-            Nossa História
-          </h2>
-          <p className="text-xl max-w-3xl mx-auto" style={{ color: 'var(--color-text-dark)' }}>
-            Mais de {new Date().getFullYear() - parish.founded_year} anos de fé, tradição e comunidade
-          </p>
-        </motion.div>
-
-        <div className="grid lg:grid-cols-3 gap-8">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="lg:col-span-1"
-          >
-            <Card className="p-6 h-full">
-              <div className="text-center mb-6">
-                {parish.logo_url ? (
-                  <img
-                    src={parish.logo_url}
-                    alt={parish.name}
-                    className="w-32 h-32 object-contain mx-auto mb-4 rounded-lg"
-                  />
-                ) : (
-                  <Church className="h-32 w-32 text-red-800 mx-auto mb-4" />
-                )}
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">{parish.name}</h3>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg">
-                  <Calendar className="h-6 w-6 text-red-800" />
-                  <div>
-                    <p className="text-sm text-gray-600">Fundada em</p>
-                    <p className="font-bold text-red-800 text-lg">{parish.founded_year}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                  <Star className="h-6 w-6 text-blue-800" />
-                  <div>
-                    <p className="text-sm text-gray-600">Anos de história</p>
-                    <p className="font-bold text-blue-800 text-lg">
-                      {new Date().getFullYear() - parish.founded_year}+
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                  <Users className="h-6 w-6 text-green-800" />
-                  <div>
-                    <p className="text-sm text-gray-600">Comunidade</p>
-                    <p className="font-bold text-green-800">Ativa e Unida</p>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="lg:col-span-2"
-          >
-            <Card className="p-8 h-full">
-              <div className="flex items-center gap-3 mb-6">
-                <BookOpen className="h-6 w-6 text-red-800" />
-                <h3 className="text-2xl font-bold text-gray-800">Nossa Jornada de Fé</h3>
-              </div>
-
-              <div className="prose prose-lg max-w-none">
-                {historyParagraphs.map((paragraph, index) => (
-                  <motion.p
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="text-gray-700 leading-relaxed mb-6 text-justify"
-                  >
-                    {paragraph}
-                  </motion.p>
-                ))}
-              </div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="mt-8 p-6 bg-gradient-to-r from-red-50 to-amber-50 border-l-4 border-red-800 rounded-lg"
+    <div className="min-h-screen bg-gray-50 overflow-y-auto">
+      {/* Header replicado da CelebrationsPage */}
+      <div className="text-white shadow-lg sticky top-0 z-50 safe-area-inset-top" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+              <Button
+                variant="outline"
+                onClick={onBack}
+                className="bg-white/20 border-white/30 text-white hover:bg-white/30 flex items-center gap-1 sm:gap-2 flex-shrink-0"
               >
-                <blockquote className="text-lg italic text-gray-800 mb-3">
-                  "Uma catedral não é feita apenas de pedras e vitrais, mas de fé, esperança e amor de cada pessoa que aqui encontra seu lar espiritual."
-                </blockquote>
-                <cite className="text-sm text-gray-600">— Tradição da Catedral de São Miguel Arcanjo</cite>
-              </motion.div>
-            </Card>
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">Voltar</span>
+              </Button>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-2xl sm:text-3xl font-bold">Nossa História</h1>
+                <p className="text-sm sm:text-base truncate" style={{ color: 'var(--color-accent-2)' }}>
+                  {`Mais de ${new Date().getFullYear() - parish.founded_year} anos de fé e tradição`}
+                </p>
+              </div>
+            </div>
+            <Church className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" style={{ color: 'var(--color-accent-2)' }} />
+          </div>
+        </div>
+      </div>
+      
+      <section id="history" className="py-20 bg-gradient-to-b from-white to-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* O conteúdo do cabeçalho da seção original foi removido para evitar duplicidade */}
+
+          <div className="grid lg:grid-cols-3 gap-8">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="lg:col-span-1"
+            >
+              <Card className="p-6 h-full">
+                <div className="text-center mb-6">
+                  {parish.logo_url ? (
+                    <img
+                      src={parish.logo_url}
+                      alt={parish.name}
+                      className="w-32 h-32 object-contain mx-auto mb-4 rounded-lg"
+                    />
+                  ) : (
+                    <Church className="h-32 w-32 text-red-800 mx-auto mb-4" />
+                  )}
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2">{parish.name}</h3>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg">
+                    <Calendar className="h-6 w-6 text-red-800" />
+                    <div>
+                      <p className="text-sm text-gray-600">Fundada em</p>
+                      <p className="font-bold text-red-800 text-lg">{parish.founded_year}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                    <Star className="h-6 w-6 text-blue-800" />
+                    <div>
+                      <p className="text-sm text-gray-600">Anos de história</p>
+                      <p className="font-bold text-blue-800 text-lg">
+                        {new Date().getFullYear() - parish.founded_year}+
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                    <Users className="h-6 w-6 text-green-800" />
+                    <div>
+                      <p className="text-sm text-gray-600">Comunidade</p>
+                      <p className="font-bold text-green-800">Ativa e Unida</p>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="lg:col-span-2"
+            >
+              <Card className="p-8 h-full">
+                <div className="flex items-center gap-3 mb-6">
+                  <BookOpen className="h-6 w-6 text-red-800" />
+                  <h3 className="text-2xl font-bold text-gray-800">Nossa Jornada de Fé</h3>
+                </div>
+
+                <div className="prose prose-lg max-w-none">
+                  {historyParagraphs.map((paragraph, index) => (
+                    <motion.p
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: index * 0.1 }}
+                      className="text-gray-700 leading-relaxed mb-6 text-justify"
+                    >
+                      {paragraph}
+                    </motion.p>
+                  ))}
+                </div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
+                  className="mt-8 p-6 bg-gradient-to-r from-red-50 to-amber-50 border-l-4 border-red-800 rounded-lg"
+                >
+                  <blockquote className="text-lg italic text-gray-800 mb-3">
+                    "Uma catedral não é feita apenas de pedras e vitrais, mas de fé, esperança e amor de cada pessoa que aqui encontra seu lar espiritual."
+                  </blockquote>
+                  <cite className="text-sm text-gray-600">— Tradição da Catedral de São Miguel Arcanjo</cite>
+                </motion.div>
+              </Card>
+            </motion.div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="mt-16"
+          >
+            <div className="text-center mb-12">
+              <h3 className="text-3xl font-bold text-gray-800 mb-4">Nossos Valores</h3>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Os pilares que sustentam nossa comunidade há gerações
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                {
+                  icon: Heart,
+                  title: 'Amor Fraterno',
+                  description: 'Cultivamos o amor ao próximo como base de nossa comunidade',
+                  color: 'red'
+                },
+                {
+                  icon: Church,
+                  title: 'Tradição',
+                  description: 'Preservamos nossa rica herança espiritual e cultural',
+                  color: 'blue'
+                },
+                {
+                  icon: Users,
+                  title: 'Comunhão',
+                  description: 'Unidos na fé, formamos uma grande família em Cristo',
+                  color: 'green'
+                },
+                {
+                  icon: Star,
+                  title: 'Esperança',
+                  description: 'Mantemos viva a esperança em um futuro melhor para todos',
+                  color: 'amber'
+                }
+              ].map((value, index) => (
+                <motion.div
+                  key={value.title}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                >
+                  <Card className="p-6 text-center h-full hover:shadow-lg transition-shadow duration-300">
+                    <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
+                      value.color === 'red' ? 'bg-blue-100' :
+                      value.color === 'blue' ? 'bg-blue-100' :
+                      value.color === 'green' ? 'bg-blue-100' :
+                      'bg-blue-100'
+                    }`}>
+                      <value.icon className={`h-8 w-8 ${
+                        'text-blue-800'
+                      }`} />
+                    </div>
+                    <h4 className="text-lg font-bold text-gray-800 mb-3">{value.title}</h4>
+                    <p className="text-gray-600 text-sm leading-relaxed">{value.description}</p>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mt-16"
-        >
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-gray-800 mb-4">Nossos Valores</h3>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Os pilares que sustentam nossa comunidade há gerações
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                icon: Heart,
-                title: 'Amor Fraterno',
-                description: 'Cultivamos o amor ao próximo como base de nossa comunidade',
-                color: 'red'
-              },
-              {
-                icon: Church,
-                title: 'Tradição',
-                description: 'Preservamos nossa rica herança espiritual e cultural',
-                color: 'blue'
-              },
-              {
-                icon: Users,
-                title: 'Comunhão',
-                description: 'Unidos na fé, formamos uma grande família em Cristo',
-                color: 'green'
-              },
-              {
-                icon: Star,
-                title: 'Esperança',
-                description: 'Mantemos viva a esperança em um futuro melhor para todos',
-                color: 'amber'
-              }
-            ].map((value, index) => (
-              <motion.div
-                key={value.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <Card className="p-6 text-center h-full hover:shadow-lg transition-shadow duration-300">
-                  <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
-                    value.color === 'red' ? 'bg-blue-100' :
-                    value.color === 'blue' ? 'bg-blue-100' :
-                    value.color === 'green' ? 'bg-blue-100' :
-                    'bg-blue-100'
-                  }`}>
-                    <value.icon className={`h-8 w-8 ${
-                      'text-blue-800'
-                    }`} />
-                  </div>
-                  <h4 className="text-lg font-bold text-gray-800 mb-3">{value.title}</h4>
-                  <p className="text-gray-600 text-sm leading-relaxed">{value.description}</p>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 };
