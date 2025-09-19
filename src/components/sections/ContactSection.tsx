@@ -1,1 +1,650 @@
-{"code":"rate-limited","message":"You have hit the rate limit. Please upgrade to keep chatting.","providerLimitHit":false,"isRetryable":true}
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { MapPin, Phone, Mail, Clock, MessageCircle, Send, User, MessageSquare, Calendar, Heart, ExternalLink, Users } from 'lucide-react';
+import { Card } from '../ui/Card';
+import { Button } from '../ui/Button';
+import { supabase, Parish, Schedule } from '../../lib/supabase';
+import toast from 'react-hot-toast';
+
+interface ContactSectionProps {
+  onNavigate: (section: string) => void;
+}
+
+export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate }) => {
+  const [parish, setParish] = useState<Parish | null>(null);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const daysOfWeek = [
+    { id: 'sunday', label: 'Domingo', shortLabel: 'Dom' },
+    { id: 'monday', label: 'Segunda-feira', shortLabel: 'Seg' },
+    { id: 'tuesday', label: 'Terça-feira', shortLabel: 'Ter' },
+    { id: 'wednesday', label: 'Quarta-feira', shortLabel: 'Qua' },
+    { id: 'thursday', label: 'Quinta-feira', shortLabel: 'Qui' },
+    { id: 'friday', label: 'Sexta-feira', shortLabel: 'Sex' },
+    { id: 'saturday', label: 'Sábado', shortLabel: 'Sáb' }
+  ];
+
+  useEffect(() => {
+    fetchContactData();
+  }, []);
+
+  const fetchContactData = async () => {
+    setIsLoading(true);
+    try {
+      // Buscar dados da paróquia
+      const { data: parishData, error: parishError } = await supabase
+        .from('parishes')
+        .select('*')
+        .limit(1)
+        .single();
+
+      if (parishError && parishError.code !== 'PGRST116') {
+        throw parishError;
+      }
+
+      if (parishData) {
+        setParish(parishData);
+      } else {
+        // Dados padrão
+        const defaultParish: Parish = {
+          id: '1',
+          name: 'Catedral de São Miguel Arcanjo',
+          history: '',
+          founded_year: 1622,
+          address: 'Praça Pe. Aleixo Monteiro Mafra, 11 - São Miguel Paulista, São Paulo - SP, 08010-000',
+          phone: '(11) 99999-9999',
+          email: 'contato@catedralsaomiguel.com.br',
+          logo_url: null,
+          cloudinary_public_id: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        setParish(defaultParish);
+      }
+
+      // Buscar horários
+      const { data: schedulesData, error: schedulesError } = await supabase
+        .from('schedules')
+        .select('*')
+        .eq('is_active', true)
+        .order('day_of_week', { ascending: true });
+
+      if (schedulesError) throw schedulesError;
+      
+      if (schedulesData && schedulesData.length > 0) {
+        setSchedules(schedulesData);
+      } else {
+        // Horários padrão
+        const defaultSchedules: Schedule[] = [
+          {
+            id: '1',
+            day_of_week: 'sunday',
+            time: '08:00',
+            description: 'Missa Dominical',
+            is_active: true,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: '2',
+            day_of_week: 'sunday',
+            time: '10:00',
+            description: 'Missa Solene',
+            is_active: true,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: '3',
+            day_of_week: 'sunday',
+            time: '19:00',
+            description: 'Missa Vespertina',
+            is_active: true,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: '4',
+            day_of_week: 'wednesday',
+            time: '19:30',
+            description: 'Missa de Quarta-feira',
+            is_active: true,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: '5',
+            day_of_week: 'friday',
+            time: '19:30',
+            description: 'Missa de Sexta-feira',
+            is_active: true,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: '6',
+            day_of_week: 'saturday',
+            time: '19:00',
+            description: 'Missa de Sábado',
+            is_active: true,
+            created_at: new Date().toISOString()
+          }
+        ];
+        setSchedules(defaultSchedules);
+      }
+    } catch (error) {
+      console.error('Error fetching contact data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!contactForm.name || !contactForm.email || !contactForm.message) {
+      toast.error('Preencha todos os campos obrigatórios');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Simular envio (em produção, implementar com edge function ou serviço de email)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      toast.success('Mensagem enviada com sucesso! Entraremos em contato em breve.');
+      setContactForm({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: ''
+      });
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error('Erro ao enviar mensagem. Tente novamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleWhatsAppClick = () => {
+    if (parish?.phone) {
+      const cleanPhone = parish.phone.replace(/\D/g, '');
+      const message = encodeURIComponent('Olá! Gostaria de entrar em contato com a catedral.');
+      window.open(`https://wa.me/55${cleanPhone}?text=${message}`, '_blank');
+    }
+  };
+
+  const handleEmailClick = () => {
+    if (parish?.email) {
+      window.open(`mailto:${parish.email}`, '_blank');
+    }
+  };
+
+  const handleMapClick = () => {
+    if (parish?.address) {
+      const encodedAddress = encodeURIComponent(parish.address);
+      window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
+    }
+  };
+
+  const getDayLabel = (dayId: string) => {
+    return daysOfWeek.find(d => d.id === dayId)?.label || dayId;
+  };
+
+  const groupSchedulesByDay = () => {
+    const grouped: { [key: string]: Schedule[] } = {};
+    
+    schedules.forEach(schedule => {
+      if (!grouped[schedule.day_of_week]) {
+        grouped[schedule.day_of_week] = [];
+      }
+      grouped[schedule.day_of_week].push(schedule);
+    });
+
+    return grouped;
+  };
+
+  const groupedSchedules = groupSchedulesByDay();
+
+  if (isLoading) {
+    return (
+      <section id="contact" className="py-20 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-800 mx-auto mb-4"></div>
+            <p className="text-gray-600">Carregando informações de contato...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="contact" className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent" style={{
+            background: 'linear-gradient(to right, var(--color-primary-from), var(--color-secondary-from))',
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text'
+          }}>
+            Entre em Contato
+          </h2>
+          <p className="text-xl max-w-3xl mx-auto" style={{ color: 'var(--color-text-dark)' }}>
+            Estamos aqui para acolher você. Nossa porta está sempre aberta
+          </p>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-2 gap-12">
+          {/* Informações de Contato e Horários */}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="space-y-6"
+          >
+            {/* Informações Principais */}
+            <Card className="p-6">
+              <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                <MessageCircle className="h-6 w-6 text-red-800" />
+                Informações de Contato
+              </h3>
+
+              <div className="space-y-4">
+                {parish?.address && (
+                  <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" onClick={handleMapClick}>
+                    <MapPin className="h-6 w-6 text-red-800 mt-1 flex-shrink-0" />
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-800 mb-1">Endereço</h4>
+                      <p className="text-gray-600 text-sm leading-relaxed">{parish.address}</p>
+                      <p className="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                        <ExternalLink className="h-3 w-3" />
+                        Clique para ver no mapa
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {parish?.phone && (
+                  <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" onClick={handleWhatsAppClick}>
+                    <Phone className="h-6 w-6 text-red-800 mt-1 flex-shrink-0" />
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-800 mb-1">Telefone</h4>
+                      <p className="text-gray-600 text-sm">{parish.phone}</p>
+                      <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                        <MessageCircle className="h-3 w-3" />
+                        Clique para WhatsApp
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {parish?.email && (
+                  <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" onClick={handleEmailClick}>
+                    <Mail className="h-6 w-6 text-red-800 mt-1 flex-shrink-0" />
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-800 mb-1">E-mail</h4>
+                      <p className="text-gray-600 text-sm">{parish.email}</p>
+                      <p className="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                        <ExternalLink className="h-3 w-3" />
+                        Clique para enviar e-mail
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Botões de Ação Rápida */}
+              <div className="grid sm:grid-cols-2 gap-3 mt-6 pt-6 border-t border-gray-200">
+                <Button
+                  variant="primary"
+                  onClick={handleWhatsAppClick}
+                  className="flex items-center justify-center gap-2"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  WhatsApp
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleEmailClick}
+                  className="flex items-center justify-center gap-2"
+                >
+                  <Mail className="h-4 w-4" />
+                  E-mail
+                </Button>
+              </div>
+            </Card>
+
+            {/* Horários das Celebrações */}
+            <Card className="p-6">
+              <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                <Clock className="h-6 w-6 text-red-800" />
+                Horários das Celebrações
+              </h3>
+
+              {schedules.length === 0 ? (
+                <div className="text-center py-6">
+                  <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">
+                    Horários serão disponibilizados em breve
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {daysOfWeek.map(day => {
+                    const daySchedules = groupedSchedules[day.id];
+                    if (!daySchedules || daySchedules.length === 0) return null;
+
+                    return (
+                      <div key={day.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                            <span className="text-red-800 font-bold text-xs">
+                              {day.shortLabel}
+                            </span>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-gray-800 text-sm">
+                              {day.label}
+                            </h4>
+                            <div className="flex flex-wrap gap-2">
+                              {daySchedules.map((schedule, index) => (
+                                <span key={index} className="text-xs text-gray-600">
+                                  {schedule.time}
+                                  {schedule.description && ` (${schedule.description})`}
+                                  {index < daySchedules.length - 1 && ' •'}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              <div className="mt-6 pt-4 border-t border-gray-200 text-center">
+                <Button
+                  variant="outline"
+                  onClick={() => onNavigate('celebrations')}
+                  className="flex items-center gap-2"
+                >
+                  <Calendar className="h-4 w-4" />
+                  Ver Escala Completa
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
+
+          {/* Formulário de Contato e Informações Adicionais */}
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="space-y-6"
+          >
+            {/* Formulário de Contato */}
+            <Card className="p-8">
+              <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                <Send className="h-6 w-6 text-red-800" />
+                Envie uma Mensagem
+              </h3>
+
+              <form onSubmit={handleFormSubmit} className="space-y-6">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Nome Completo *
+                    </label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <input
+                        type="text"
+                        value={contactForm.name}
+                        onChange={(e) => setContactForm(prev => ({ ...prev, name: e.target.value }))}
+                        className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="Seu nome completo"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      E-mail *
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <input
+                        type="email"
+                        value={contactForm.email}
+                        onChange={(e) => setContactForm(prev => ({ ...prev, email: e.target.value }))}
+                        className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="seu@email.com"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Telefone (opcional)
+                    </label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <input
+                        type="tel"
+                        value={contactForm.phone}
+                        onChange={(e) => setContactForm(prev => ({ ...prev, phone: e.target.value }))}
+                        className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="(11) 99999-9999"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Assunto
+                    </label>
+                    <select
+                      value={contactForm.subject}
+                      onChange={(e) => setContactForm(prev => ({ ...prev, subject: e.target.value }))}
+                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    >
+                      <option value="">Selecione um assunto</option>
+                      <option value="informacoes">Informações Gerais</option>
+                      <option value="batismo">Batismo</option>
+                      <option value="casamento">Casamento</option>
+                      <option value="primeira-comunhao">Primeira Comunhão</option>
+                      <option value="crisma">Crisma</option>
+                      <option value="pastoral">Pastorais</option>
+                      <option value="eventos">Eventos</option>
+                      <option value="outros">Outros</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Mensagem *
+                  </label>
+                  <div className="relative">
+                    <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <textarea
+                      value={contactForm.message}
+                      onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
+                      rows={6}
+                      className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                      placeholder="Escreva sua mensagem aqui..."
+                      required
+                    />
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full flex items-center justify-center gap-2"
+                  size="lg"
+                >
+                  <Send className="h-4 w-4" />
+                  {isSubmitting ? 'Enviando...' : 'Enviar Mensagem'}
+                </Button>
+
+                <p className="text-xs text-gray-500 text-center">
+                  Responderemos sua mensagem o mais breve possível
+                </p>
+              </form>
+            </Card>
+
+            {/* Mapa */}
+            <Card className="p-6">
+              <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                <MapPin className="h-6 w-6 text-red-800" />
+                Localização
+              </h3>
+              
+              <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-4">
+                <iframe
+                  src={`https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=${encodeURIComponent(parish?.address || 'Catedral de São Miguel Arcanjo')}`}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Localização da Catedral de São Miguel Arcanjo"
+                />
+              </div>
+              
+              <Button
+                variant="outline"
+                onClick={handleMapClick}
+                className="w-full flex items-center justify-center gap-2"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Abrir no Google Maps
+              </Button>
+            </Card>
+
+            {/* Informações Pastorais */}
+            <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100">
+              <h3 className="text-xl font-bold text-blue-900 mb-4 flex items-center gap-3">
+                <Heart className="h-6 w-6 text-blue-800" />
+                Atendimento Pastoral
+              </h3>
+              
+              <div className="space-y-3 text-sm text-blue-800">
+                <p className="flex items-start gap-2">
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></span>
+                  <span><strong>Confissões:</strong> Sábados das 18h às 18h45 e domingos 30 min antes das missas</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></span>
+                  <span><strong>Atendimento Pastoral:</strong> Segunda a sexta, das 9h às 17h (agendar)</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></span>
+                  <span><strong>Emergências:</strong> 24 horas via telefone</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <span className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></span>
+                  <span><strong>Sacramentos:</strong> Agendar com antecedência</span>
+                </p>
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-blue-200">
+                <Button
+                  variant="outline"
+                  onClick={() => onNavigate('pastorals')}
+                  className="w-full flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 border-blue-300"
+                >
+                  <Users className="h-4 w-4" />
+                  Conhecer Nossas Pastorais
+                </Button>
+              </div>
+            </Card>
+
+            {/* Redes Sociais */}
+            <Card className="p-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-3">
+                <MessageCircle className="h-6 w-6 text-red-800" />
+                Siga-nos
+              </h3>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => window.open('https://www.facebook.com/catedralsaomiguel', '_blank')}
+                  className="flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                >
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                  Facebook
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => window.open('https://www.instagram.com/catedralsaomiguel', '_blank')}
+                  className="flex items-center justify-center gap-2 text-pink-600 hover:text-pink-700 hover:bg-pink-50"
+                >
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987 6.62 0 11.987-5.367 11.987-11.987C24.014 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.611-3.132-1.551-.684-.94-.684-2.102 0-3.042.684-.94 1.835-1.551 3.132-1.551s2.448.611 3.132 1.551c.684.94.684 2.102 0 3.042-.684.94-1.835 1.551-3.132 1.551zM7.518 0c-1.297 0-2.448-.611-3.132-1.551-.684-.94-.684-2.102 0-3.042.684-.94 1.835-1.551 3.132-1.551s2.448.611 3.132 1.551c.684.94.684 2.102 0 3.042-.684.94-1.835 1.551-3.132 1.551z"/>
+                  </svg>
+                  Instagram
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+
+        {/* Footer com Links */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mt-16 text-center"
+        >
+          <Card className="p-6 bg-gray-100">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-gray-600">
+              <button
+                onClick={() => onNavigate('privacy-policy')}
+                className="hover:text-red-800 transition-colors underline"
+              >
+                Política de Privacidade
+              </button>
+              <span className="hidden sm:inline">•</span>
+              <button
+                onClick={() => onNavigate('terms-of-use')}
+                className="hover:text-red-800 transition-colors underline"
+              >
+                Termos de Uso
+              </button>
+              <span className="hidden sm:inline">•</span>
+              <span>© 2025 Catedral de São Miguel Arcanjo</span>
+            </div>
+          </Card>
+        </motion.div>
+      </div>
+    </section>
+  );
+};

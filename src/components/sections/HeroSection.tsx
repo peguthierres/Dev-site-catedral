@@ -30,9 +30,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
           transition={{ duration: 0.8 }}
           className="mb-6 sm:mb-8"
         >
-          <Church className="h-16 w-16 sm:h-20 sm:w-20 text-blue-400 mx-auto mb-4 sm:mb-6" />
           <Church className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-4 sm:mb-6" style={{ color: 'var(--color-accent-2)' }} />
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4 leading-tight">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight" style={{ color: 'var(--color-text-light)' }}>
             Catedral de São Miguel
           </h1>
@@ -50,7 +48,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="bg-white/10 backdrop-blur-md rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 border border-white/20"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-amber-300 mb-4">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4" style={{ color: 'var(--color-accent-2)' }}>
             Tradição e Fé
           </h2>
@@ -125,6 +122,3 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
     </section>
   );
 };
-
-  )
-}

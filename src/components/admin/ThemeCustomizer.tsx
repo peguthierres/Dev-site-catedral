@@ -40,6 +40,41 @@ const defaultSettings: ThemeSettings = {
   site_header_text_color: '#FFFFFF',
 };
 
+// Componente auxiliar para entrada de cor
+const ColorInput: React.FC<{
+  label: string;
+  name: keyof ThemeSettings;
+  value: string;
+  description?: string;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}> = ({ label, name, value, description, handleChange }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-2">
+      {label}
+    </label>
+    <div className="flex items-center gap-2">
+      <input
+        type="color"
+        name={name}
+        value={value}
+        onChange={handleChange}
+        className="w-12 h-10 rounded-lg border border-gray-300 cursor-pointer"
+      />
+      <input
+        type="text"
+        name={name}
+        value={value}
+        onChange={handleChange}
+        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+        placeholder="#RRGGBB"
+      />
+    </div>
+    {description && (
+      <p className="text-xs text-gray-500 mt-1">{description}</p>
+    )}
+  </div>
+);
+
 export const ThemeCustomizer: React.FC = () => {
   const [settings, setSettings] = useState<ThemeSettings>(defaultSettings);
   const [isLoading, setIsLoading] = useState(true);
@@ -180,39 +215,6 @@ export const ThemeCustomizer: React.FC = () => {
     toast.success('Prévia aplicada! Salve para manter as alterações.');
   };
 
-  const ColorInput: React.FC<{
-    label: string;
-    name: keyof ThemeSettings;
-    value: string;
-    description?: string;
-  }> = ({ label, name, value, description }) => (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        {label}
-      </label>
-      <div className="flex items-center gap-2">
-        <input
-          type="color"
-          name={name}
-          value={value}
-          onChange={handleChange}
-          className="w-12 h-10 rounded-lg border border-gray-300 cursor-pointer"
-        />
-        <input
-          type="text"
-          name={name}
-          value={value}
-          onChange={handleChange}
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-          placeholder="#RRGGBB"
-        />
-      </div>
-      {description && (
-        <p className="text-xs text-gray-500 mt-1">{description}</p>
-      )}
-    </div>
-  );
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -265,10 +267,10 @@ export const ThemeCustomizer: React.FC = () => {
         </h4>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
           <div className="text-center">
-            <div 
+            <div
               className="w-full h-16 rounded-lg border border-gray-200 mb-2"
               style={{
-                background: settings.site_use_primary_gradient 
+                background: settings.site_use_primary_gradient
                   ? `linear-gradient(to right, ${settings.site_primary_color_from}, ${settings.site_primary_color_to})`
                   : settings.site_primary_color_from
               }}
@@ -276,10 +278,10 @@ export const ThemeCustomizer: React.FC = () => {
             <p className="text-xs text-gray-600">Primária</p>
           </div>
           <div className="text-center">
-            <div 
+            <div
               className="w-full h-16 rounded-lg border border-gray-200 mb-2"
               style={{
-                background: settings.site_use_secondary_gradient 
+                background: settings.site_use_secondary_gradient
                   ? `linear-gradient(to right, ${settings.site_secondary_color_from}, ${settings.site_secondary_color_to})`
                   : settings.site_secondary_color_from
               }}
@@ -287,28 +289,28 @@ export const ThemeCustomizer: React.FC = () => {
             <p className="text-xs text-gray-600">Secundária</p>
           </div>
           <div className="text-center">
-            <div 
+            <div
               className="w-full h-16 rounded-lg border border-gray-200 mb-2"
               style={{ backgroundColor: settings.site_accent_color_1 }}
             ></div>
             <p className="text-xs text-gray-600">Destaque 1</p>
           </div>
           <div className="text-center">
-            <div 
+            <div
               className="w-full h-16 rounded-lg border border-gray-200 mb-2"
               style={{ backgroundColor: settings.site_accent_color_2 }}
             ></div>
             <p className="text-xs text-gray-600">Destaque 2</p>
           </div>
           <div className="text-center">
-            <div 
+            <div
               className="w-full h-16 rounded-lg border border-gray-200 mb-2"
               style={{ backgroundColor: settings.site_background_color_light }}
             ></div>
             <p className="text-xs text-gray-600">Fundo Claro</p>
           </div>
           <div className="text-center">
-            <div 
+            <div
               className="w-full h-16 rounded-lg border border-gray-200 mb-2"
               style={{ backgroundColor: settings.site_background_color_dark }}
             ></div>
@@ -329,12 +331,14 @@ export const ThemeCustomizer: React.FC = () => {
             name="site_primary_color_from"
             value={settings.site_primary_color_from}
             description="Cor principal usada no cabeçalho e botões"
+            handleChange={handleChange}
           />
           <ColorInput
             label="Cor Final do Gradiente"
             name="site_primary_color_to"
             value={settings.site_primary_color_to}
             description="Segunda cor para criar gradiente"
+            handleChange={handleChange}
           />
           <div className="md:col-span-2">
             <label className="flex items-center gap-2">
@@ -365,12 +369,14 @@ export const ThemeCustomizer: React.FC = () => {
             name="site_secondary_color_from"
             value={settings.site_secondary_color_from}
             description="Cor secundária para botões e elementos de destaque"
+            handleChange={handleChange}
           />
           <ColorInput
             label="Cor Final do Gradiente"
             name="site_secondary_color_to"
             value={settings.site_secondary_color_to}
             description="Segunda cor para criar gradiente secundário"
+            handleChange={handleChange}
           />
           <div className="md:col-span-2">
             <label className="flex items-center gap-2">
@@ -401,24 +407,28 @@ export const ThemeCustomizer: React.FC = () => {
             name="site_text_color_dark"
             value={settings.site_text_color_dark}
             description="Cor para textos em fundos claros"
+            handleChange={handleChange}
           />
           <ColorInput
             label="Texto Claro"
             name="site_text_color_light"
             value={settings.site_text_color_light}
             description="Cor para textos em fundos escuros"
+            handleChange={handleChange}
           />
           <ColorInput
             label="Texto dos Botões"
             name="site_button_text_color"
             value={settings.site_button_text_color}
             description="Cor do texto dentro dos botões"
+            handleChange={handleChange}
           />
           <ColorInput
             label="Texto do Cabeçalho"
             name="site_header_text_color"
             value={settings.site_header_text_color}
             description="Cor do texto no cabeçalho do site"
+            handleChange={handleChange}
           />
         </div>
       </Card>
@@ -435,12 +445,14 @@ export const ThemeCustomizer: React.FC = () => {
             name="site_background_color_light"
             value={settings.site_background_color_light}
             description="Cor de fundo para seções claras"
+            handleChange={handleChange}
           />
           <ColorInput
             label="Fundo Escuro"
             name="site_background_color_dark"
             value={settings.site_background_color_dark}
             description="Cor de fundo para seções escuras"
+            handleChange={handleChange}
           />
         </div>
       </Card>
@@ -457,12 +469,14 @@ export const ThemeCustomizer: React.FC = () => {
             name="site_accent_color_1"
             value={settings.site_accent_color_1}
             description="Cor para elementos de destaque e ícones"
+            handleChange={handleChange}
           />
           <ColorInput
             label="Destaque 2"
             name="site_accent_color_2"
             value={settings.site_accent_color_2}
             description="Segunda cor de destaque para variações"
+            handleChange={handleChange}
           />
         </div>
       </Card>
@@ -472,10 +486,10 @@ export const ThemeCustomizer: React.FC = () => {
         <h4 className="text-lg font-semibold text-gray-800 mb-4">Exemplo de Aplicação</h4>
         <div className="space-y-4">
           {/* Exemplo de cabeçalho */}
-          <div 
+          <div
             className="p-4 rounded-lg text-white"
             style={{
-              background: settings.site_use_primary_gradient 
+              background: settings.site_use_primary_gradient
                 ? `linear-gradient(to right, ${settings.site_primary_color_from}, ${settings.site_primary_color_to})`
                 : settings.site_primary_color_from,
               color: settings.site_header_text_color
@@ -490,7 +504,7 @@ export const ThemeCustomizer: React.FC = () => {
             <button
               className="px-4 py-2 rounded-lg font-medium transition-all duration-200"
               style={{
-                background: settings.site_use_primary_gradient 
+                background: settings.site_use_primary_gradient
                   ? `linear-gradient(to right, ${settings.site_primary_color_from}, ${settings.site_primary_color_to})`
                   : settings.site_primary_color_from,
                 color: settings.site_button_text_color
@@ -501,7 +515,7 @@ export const ThemeCustomizer: React.FC = () => {
             <button
               className="px-4 py-2 rounded-lg font-medium transition-all duration-200"
               style={{
-                background: settings.site_use_secondary_gradient 
+                background: settings.site_use_secondary_gradient
                   ? `linear-gradient(to right, ${settings.site_secondary_color_from}, ${settings.site_secondary_color_to})`
                   : settings.site_secondary_color_from,
                 color: settings.site_button_text_color
@@ -522,17 +536,17 @@ export const ThemeCustomizer: React.FC = () => {
           </div>
 
           {/* Exemplo de texto */}
-          <div 
+          <div
             className="p-4 rounded-lg"
             style={{ backgroundColor: settings.site_background_color_light }}
           >
-            <h5 
+            <h5
               className="font-bold mb-2"
               style={{ color: settings.site_text_color_dark }}
             >
               Exemplo de Texto Escuro
             </h5>
-            <p 
+            <p
               className="text-sm"
               style={{ color: settings.site_text_color_dark }}
             >
@@ -540,17 +554,17 @@ export const ThemeCustomizer: React.FC = () => {
             </p>
           </div>
 
-          <div 
+          <div
             className="p-4 rounded-lg"
             style={{ backgroundColor: settings.site_background_color_dark }}
           >
-            <h5 
+            <h5
               className="font-bold mb-2"
               style={{ color: settings.site_text_color_light }}
             >
               Exemplo de Texto Claro
             </h5>
-            <p 
+            <p
               className="text-sm"
               style={{ color: settings.site_text_color_light }}
             >
@@ -573,39 +587,4 @@ export const ThemeCustomizer: React.FC = () => {
       </Card>
     </div>
   );
-
-  function ColorInput({ label, name, value, description }: {
-    label: string;
-    name: keyof ThemeSettings;
-    value: string;
-    description?: string;
-  }) {
-    return (
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {label}
-        </label>
-        <div className="flex items-center gap-2">
-          <input
-            type="color"
-            name={name}
-            value={value}
-            onChange={handleChange}
-            className="w-12 h-10 rounded-lg border border-gray-300 cursor-pointer"
-          />
-          <input
-            type="text"
-            name={name}
-            value={value}
-            onChange={handleChange}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-            placeholder="#RRGGBB"
-          />
-        </div>
-        {description && (
-          <p className="text-xs text-gray-500 mt-1">{description}</p>
-        )}
-      </div>
-    );
-  }
 };
