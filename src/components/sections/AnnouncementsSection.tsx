@@ -206,70 +206,70 @@ export const AnnouncementsSection: React.FC = () => {
                         <div className="p-6 flex-1 flex flex-col">
                           <div className="flex items-center gap-3 mb-4">
                             <div className={`p-3 rounded-full ${
-                              announcement.type === 'event' 
+                              announcement.type === 'event' 
                                 ? 'text-white'
                                 : 'text-white'
                             }`} style={{
-                              backgroundColor: announcement.type === 'event' 
+                              backgroundColor: announcement.type === 'event' 
                                 ? 'var(--color-primary-from)'
                                 : 'var(--color-secondary-from)'
                             }}>
                               <IconComponent className="h-6 w-6" />
-                            </div>
-                            <div className="flex-1">
-                              <span className={`inline-block px-2 py-1 text-xs rounded-full font-medium ${
-                                announcement.type === 'event'
-                                  ? 'text-white'
-                                  : 'text-white'
-                              }`} style={{
-                                backgroundColor: announcement.type === 'event'
-                                  ? 'var(--color-primary-from)'
-                                  : 'var(--color-secondary-from)'
-                              }}>
-                                {getTypeLabel(announcement.type)}
-                              </span>
-                            </div>
                           </div>
-
-                          <h3 className="text-lg font-bold text-gray-800 mb-3 group-hover:text-blue-800 transition-colors line-clamp-2">
-                            {announcement.title}
-                          </h3>
-
-                          <p className="text-gray-600 mb-4 flex-1 line-clamp-3 text-sm leading-relaxed">
-                            {announcement.content}
-                          </p>
-
-                          <div className="space-y-2">
-                            {announcement.event_date && (
-                              <div className="flex items-center gap-2 text-xs text-gray-500">
-                                <Clock className="h-3 w-3" />
-                                <span>{formatEventDate(announcement.event_date)}</span>
-                              </div>
-                            )}
-
-                            {announcement.whatsapp_contact && (
-                              <div className="flex items-center gap-2 text-xs text-green-600">
-                                <MessageCircle className="h-3 w-3" />
-                                <span>Contato disponível</span>
-                              </div>
-                            )}
-
-                            <div className="flex items-center gap-2 text-xs text-gray-500">
-                              <Calendar className="h-3 w-3" />
-                              <span>Publicado em {new Date(announcement.created_at).toLocaleDateString('pt-BR')}</span>
-                          </div>
-                          </div>
-
-                          <div className="mt-4 pt-3 border-t border-gray-100">
-                            <div className="flex items-center font-medium group-hover:opacity-80 transition-colors text-sm" style={{ color: 'var(--color-primary-from)' }}>
-                              <span>Ver detalhes</span>
-                              <ExternalLink className="h-3 w-3 ml-2 group-hover:translate-x-1 transition-transform" />
-                            </div>
-                          </div>
+                          <div className="flex-1">
+                            <span className={`inline-block px-2 py-1 text-xs rounded-full font-medium ${
+                              announcement.type === 'event'
+                                ? 'text-white'
+                                : 'text-white'
+                            }`} style={{
+                              backgroundColor: announcement.type === 'event'
+                                ? 'var(--color-primary-from)'
+                                : 'var(--color-secondary-from)'
+                            }}>
+                              {getTypeLabel(announcement.type)}
+                          </span>
                         </div>
-                      </Card>
-                    </button>
-                  </motion.div>
+                      </div>
+
+                      <h3 className="text-lg font-bold text-gray-800 mb-3 group-hover:text-blue-800 transition-colors line-clamp-2">
+                        {announcement.title}
+                      </h3>
+
+                      <p className="text-gray-600 mb-4 flex-1 line-clamp-3 text-sm leading-relaxed">
+                        {announcement.content}
+                      </p>
+
+                      <div className="space-y-2">
+                        {announcement.event_date && (
+                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <Clock className="h-3 w-3" />
+                            <span>{formatEventDate(announcement.event_date)}</span>
+                          </div>
+                        )}
+
+                        {announcement.whatsapp_contact && (
+                          <div className="flex items-center gap-2 text-xs text-green-600">
+                            <MessageCircle className="h-3 w-3" />
+                            <span>Contato disponível</span>
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                          <Calendar className="h-3 w-3" />
+                          <span>Publicado em {new Date(announcement.created_at).toLocaleDateString('pt-BR')}</span>
+                      </div>
+                      </div>
+
+                      <div className="mt-4 pt-3 border-t border-gray-100">
+                        <div className="flex items-center font-medium group-hover:opacity-80 transition-colors text-sm" style={{ color: 'var(--color-primary-from)' }}>
+                          <span>Ver detalhes</span>
+                          <ExternalLink className="h-3 w-3 ml-2 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </button>
+              </motion.div>
                 );
               })}
             </div>
@@ -324,11 +324,11 @@ export const AnnouncementsSection: React.FC = () => {
                 <div className="space-y-6">
                   {/* Data do Evento */}
                   {selectedAnnouncement.event_date && (
-                    <div className="flex items-center gap-3 p-4 rounded-lg" style={{ backgroundColor: 'var(--color-accent-2)', opacity: 0.2, border: '1px solid var(--color-primary-from)' }}>
-                      <Clock className="h-6 w-6" style={{ color: 'var(--color-primary-from)' }} />
+                    <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100">
+                      <Clock className="h-6 w-6 text-gray-700" />
                       <div>
-                        <p className="text-sm font-medium" style={{ color: 'var(--color-primary-from)' }}>Data e Horário</p>
-                        <p className="font-bold text-lg" style={{ color: 'var(--color-primary-from)' }}>
+                        <p className="text-sm text-gray-700 font-medium">Data e Horário</p>
+                        <p className="font-bold text-lg text-gray-900">
                           {formatEventDate(selectedAnnouncement.event_date)}
                         </p>
                       </div>
@@ -345,7 +345,7 @@ export const AnnouncementsSection: React.FC = () => {
                         </p>
                       ))}
                     </div>
-                  </div>
+                </div>
 
                   {/* Contato WhatsApp */}
                   {selectedAnnouncement.whatsapp_contact && (
@@ -380,8 +380,8 @@ export const AnnouncementsSection: React.FC = () => {
                         year: 'numeric'
                       })}
                     </p>
-                  </div>
                 </div>
+              </div>
 
                 {/* Botão de Fechar */}
                 <div className="text-center mt-8 pt-6 border-t border-gray-200">
