@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Church, Users, Heart, BookOpen, Star } from 'lucide-react';
+import { Calendar, Church, Users, Heart, BookOpen, Star, ArrowLeft } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { supabase, Parish } from '../../lib/supabase';
@@ -33,7 +33,6 @@ export const HistorySection: React.FC<HistorySectionProps> = ({ onBack }) => {
       if (data) {
         setParish(data);
       } else {
-        // Dados padrão se não houver registro
         const defaultParish: Parish = {
           id: '1',
           name: 'Catedral de São Miguel Arcanjo',
@@ -92,7 +91,6 @@ export const HistorySection: React.FC<HistorySectionProps> = ({ onBack }) => {
   return (
     <section id="history" className="py-20 bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header com botão voltar quando acessado como página separada */}
         {onBack && (
           <div className="mb-8">
             <Button
@@ -126,7 +124,6 @@ export const HistorySection: React.FC<HistorySectionProps> = ({ onBack }) => {
         </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Informações Principais */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -178,7 +175,6 @@ export const HistorySection: React.FC<HistorySectionProps> = ({ onBack }) => {
             </Card>
           </motion.div>
 
-          {/* História Detalhada */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -207,7 +203,6 @@ export const HistorySection: React.FC<HistorySectionProps> = ({ onBack }) => {
                 ))}
               </div>
 
-              {/* Citação Inspiradora */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -224,7 +219,6 @@ export const HistorySection: React.FC<HistorySectionProps> = ({ onBack }) => {
           </motion.div>
         </div>
 
-        {/* Seção de Valores */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
