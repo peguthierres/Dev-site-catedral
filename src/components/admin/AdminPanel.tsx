@@ -99,11 +99,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         className="bg-white rounded-xl shadow-2xl w-full max-w-7xl max-h-[95vh] overflow-hidden overscroll-contain"
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-800 to-blue-900 text-white p-4 sm:p-6">
+        <div className="text-white p-4 sm:p-6" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))', color: 'var(--color-header-text)' }}>
           <div className="flex items-center justify-between">
             <div className="flex-1 min-w-0 pr-4">
               <h2 className="text-xl sm:text-2xl font-bold">Painel Administrativo</h2>
-              <p className="text-blue-200 text-sm sm:text-base truncate">Gerenciar conteúdo da catedral</p>
+              <p className="text-sm sm:text-base truncate" style={{ color: 'var(--color-accent-2)' }}>Gerenciar conteúdo da catedral</p>
             </div>
             <div className="flex gap-1 sm:gap-2 flex-shrink-0">
               <Button variant="outline" onClick={handleSignOut}>
@@ -132,9 +132,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex-shrink-0 sm:w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-left transition-all duration-200 text-xs sm:text-sm whitespace-nowrap font-medium ${
                     activeTab === tab.id
-                      ? 'bg-blue-800 text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gray-200 hover:text-blue-800'
+                      ? 'text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gray-200'
                   }`}
+                  style={activeTab === tab.id ? {
+                    background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))'
+                  } : {}}
+                  onMouseEnter={(e) => {
+                    if (activeTab !== tab.id) {
+                      e.currentTarget.style.color = 'var(--color-primary-from)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (activeTab !== tab.id) {
+                      e.currentTarget.style.color = '#374151';
+                    }
+                  }}
                 >
                   <tab.icon className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
                   <span className="truncate hidden sm:inline">{tab.label}</span>

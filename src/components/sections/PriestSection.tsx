@@ -145,44 +145,44 @@ export const PriestSection: React.FC = () => {
                             src={priest.photo_url}
                             alt={priest.name}
                             publicId={priest.cloudinary_public_id || undefined}
-                            width={400}
-                            height={400}
+                            width={200}
+                            height={200}
                             quality={40}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <User className="h-24 w-24 text-gray-400" />
+                            <User className="h-12 w-12 text-gray-400" />
                           </div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
 
                       {/* Content */}
-                      <div className="p-6 flex-1 flex flex-col">
-                        <div className="text-center mb-4">
-                          <h3 className="text-xl font-bold text-gray-800 group-hover:text-red-800 transition-colors mb-1">
+                      <div className="p-2 sm:p-3 flex-1 flex flex-col">
+                        <div className="text-center mb-2">
+                          <h3 className="text-sm sm:text-base font-bold text-gray-800 group-hover:text-blue-800 transition-colors mb-1">
                             {priest.name}
                           </h3>
-                          <p className="text-red-800 font-semibold text-sm mb-2">
+                          <p className="font-semibold text-xs mb-2" style={{ color: 'var(--color-primary-from)' }}>
                             {priest.title}
                           </p>
                         </div>
 
-                        <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-1 line-clamp-3 text-justify">
+                        <p className="text-gray-600 text-xs leading-relaxed mb-2 flex-1 line-clamp-2 text-center">
                           {priest.short_bio}
                         </p>
 
                         {/* Info Cards */}
-                        <div className="space-y-2 mb-4">
+                        <div className="space-y-1 mb-2">
                           {priest.ordination_year && (
-                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <div className="flex items-center justify-center gap-1 text-[10px] text-gray-500">
                               <Church className="h-3 w-3" />
                               <span>Ordenado em {priest.ordination_year}</span>
                             </div>
                           )}
                           {priest.parish_since && (
-                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <div className="flex items-center justify-center gap-1 text-[10px] text-gray-500">
                               <Calendar className="h-3 w-3" />
                               <span>Na paróquia desde {priest.parish_since}</span>
                             </div>
@@ -190,9 +190,9 @@ export const PriestSection: React.FC = () => {
                         </div>
 
                         <div className="text-center">
-                          <span className="inline-flex items-center text-red-800 font-medium group-hover:text-red-900 transition-colors text-sm">
+                          <span className="inline-flex items-center font-medium group-hover:opacity-80 transition-colors text-xs" style={{ color: 'var(--color-primary-from)' }}>
                             <span>Conhecer melhor</span>
-                            <BookOpen className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                            <BookOpen className="h-3 w-3 ml-1 group-hover:translate-x-1 transition-transform" />
                           </span>
                         </div>
                       </div>
@@ -222,7 +222,7 @@ export const PriestSection: React.FC = () => {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header do Modal */}
-              <div className="bg-gradient-to-r from-red-800 to-red-900 text-white p-6">
+              <div className="text-white p-6" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))' }}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     {selectedPriest.photo_url && (
@@ -234,7 +234,7 @@ export const PriestSection: React.FC = () => {
                     )}
                     <div>
                       <h3 className="text-2xl font-bold">{selectedPriest.name}</h3>
-                      <p className="text-red-200">{selectedPriest.title}</p>
+                      <p style={{ color: 'var(--color-accent-2)' }}>{selectedPriest.title}</p>
                     </div>
                   </div>
                   <Button
@@ -266,26 +266,26 @@ export const PriestSection: React.FC = () => {
                     {/* Cards de informação */}
                     <div className="grid sm:grid-cols-2 gap-4 mb-6">
                       {selectedPriest.ordination_year && (
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--color-accent-2)', opacity: 0.1, border: '1px solid var(--color-accent-1)' }}>
                           <div className="flex items-center gap-2 mb-2">
-                            <Church className="h-5 w-5 text-blue-800" />
-                            <span className="text-sm font-medium text-blue-800">Ordenação</span>
+                            <Church className="h-5 w-5" style={{ color: 'var(--color-primary-from)' }} />
+                            <span className="text-sm font-medium" style={{ color: 'var(--color-primary-from)' }}>Ordenação</span>
                           </div>
-                          <p className="text-lg font-bold text-blue-900">{selectedPriest.ordination_year}</p>
-                          <p className="text-xs text-blue-700">
+                          <p className="text-lg font-bold" style={{ color: 'var(--color-primary-from)' }}>{selectedPriest.ordination_year}</p>
+                          <p className="text-xs" style={{ color: 'var(--color-secondary-from)' }}>
                             {new Date().getFullYear() - selectedPriest.ordination_year} anos de sacerdócio
                           </p>
                         </div>
                       )}
 
                       {selectedPriest.parish_since && (
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--color-accent-1)', opacity: 0.1, border: '1px solid var(--color-accent-2)' }}>
                           <div className="flex items-center gap-2 mb-2">
-                            <Heart className="h-5 w-5 text-green-800" />
-                            <span className="text-sm font-medium text-green-800">Na Paróquia</span>
+                            <Heart className="h-5 w-5" style={{ color: 'var(--color-secondary-from)' }} />
+                            <span className="text-sm font-medium" style={{ color: 'var(--color-secondary-from)' }}>Na Paróquia</span>
                           </div>
-                          <p className="text-lg font-bold text-green-900">Desde {selectedPriest.parish_since}</p>
-                          <p className="text-xs text-green-700">
+                          <p className="text-lg font-bold" style={{ color: 'var(--color-secondary-from)' }}>Desde {selectedPriest.parish_since}</p>
+                          <p className="text-xs" style={{ color: 'var(--color-primary-from)' }}>
                             {new Date().getFullYear() - selectedPriest.parish_since} anos conosco
                           </p>
                         </div>
@@ -295,7 +295,7 @@ export const PriestSection: React.FC = () => {
                     {/* Biografia completa */}
                     <div>
                       <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                        <BookOpen className="h-5 w-5 text-red-800" />
+                        <BookOpen className="h-5 w-5" style={{ color: 'var(--color-primary-from)' }} />
                         Biografia
                       </h4>
                       <div className="prose max-w-none">

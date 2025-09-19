@@ -154,7 +154,11 @@ export const TimelineSection: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-red-800 to-amber-600 bg-clip-text text-transparent mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent" style={{
+            background: 'linear-gradient(to right, var(--color-primary-from), var(--color-secondary-from))',
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text'
+          }}>
             Linha do Tempo
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -173,7 +177,7 @@ export const TimelineSection: React.FC = () => {
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               
-              <div className="flex items-center gap-2 px-4 py-2 bg-red-800 text-white rounded-lg">
+              <div className="flex items-center gap-2 px-4 py-2 text-white rounded-lg" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))' }}>
                 <Calendar className="h-4 w-4" />
                 <span className="font-bold">{currentEvent.year}</span>
               </div>
@@ -213,11 +217,11 @@ export const TimelineSection: React.FC = () => {
             <div className={`grid ${currentEvent.image_url ? 'md:grid-cols-2' : 'grid-cols-1'} gap-8`}>
               <div className="p-8">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-red-800 to-amber-600 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-secondary-from))' }}>
                     <Calendar className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-3xl font-bold text-red-900">{currentEvent.year}</h3>
+                    <h3 className="text-3xl font-bold" style={{ color: 'var(--color-primary-from)' }}>{currentEvent.year}</h3>
                     <p className="text-sm text-gray-500">
                       {currentIndex + 1} de {events.length}
                     </p>
@@ -304,9 +308,24 @@ export const TimelineSection: React.FC = () => {
                   onClick={() => setCurrentIndex(index)}
                   className={`p-4 rounded-lg text-center transition-all ${
                     index === currentIndex
-                      ? 'bg-red-800 text-white shadow-lg'
-                      : 'bg-white border border-gray-200 hover:border-red-300 hover:shadow-md'
+                      ? 'text-white shadow-lg'
+                      : 'bg-white border border-gray-200 hover:shadow-md'
                   }`}
+                  style={index === currentIndex ? {
+                    background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))'
+                  } : {
+                    borderColor: index === currentIndex ? 'var(--color-primary-from)' : undefined
+                  }}
+                  onMouseEnter={(e) => {
+                    if (index !== currentIndex) {
+                      e.currentTarget.style.borderColor = 'var(--color-accent-1)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (index !== currentIndex) {
+                      e.currentTarget.style.borderColor = '#e5e7eb';
+                    }
+                  }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >

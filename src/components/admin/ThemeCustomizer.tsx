@@ -24,18 +24,18 @@ interface ThemeSettings {
 }
 
 const defaultSettings: ThemeSettings = {
-  site_primary_color_from: '#7F1D1D',
-  site_primary_color_to: '#991B1B',
+  site_primary_color_from: '#19274e',
+  site_primary_color_to: '#2a3b63',
   site_use_primary_gradient: true,
-  site_secondary_color_from: '#1E40AF',
-  site_secondary_color_to: '#1E3A8A',
+  site_secondary_color_from: '#1a3a70',
+  site_secondary_color_to: '#2d5299',
   site_use_secondary_gradient: true,
   site_text_color_dark: '#374151',
   site_text_color_light: '#FFFFFF',
   site_background_color_light: '#F9FAFB',
-  site_background_color_dark: '#002C53',
-  site_accent_color_1: '#D97706',
-  site_accent_color_2: '#FCD34D',
+  site_background_color_dark: '#19274e',
+  site_accent_color_1: '#60a5fa',
+  site_accent_color_2: '#93c5fd',
   site_button_text_color: '#FFFFFF',
   site_header_text_color: '#FFFFFF',
 };
