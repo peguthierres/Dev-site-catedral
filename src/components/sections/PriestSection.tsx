@@ -266,26 +266,26 @@ export const PriestSection: React.FC = () => {
                     {/* Cards de informação */}
                     <div className="grid sm:grid-cols-2 gap-4 mb-6">
                       {selectedPriest.ordination_year && (
-                        <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--color-accent-2)', opacity: 0.2, border: '1px solid var(--color-primary-from)' }}>
+                        <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--color-accent-2)', opacity: 0.3, border: '2px solid var(--color-primary-from)' }}>
                           <div className="flex items-center gap-2 mb-2">
                             <Church className="h-5 w-5" style={{ color: 'var(--color-primary-from)' }} />
-                            <span className="text-sm font-medium" style={{ color: 'var(--color-primary-from)' }}>Ordenação</span>
+                            <span className="text-sm font-bold text-gray-800">Ordenação</span>
                           </div>
-                          <p className="text-lg font-bold" style={{ color: 'var(--color-primary-from)' }}>{selectedPriest.ordination_year}</p>
-                          <p className="text-xs" style={{ color: 'var(--color-primary-from)' }}>
+                          <p className="text-lg font-bold text-gray-900">{selectedPriest.ordination_year}</p>
+                          <p className="text-xs text-gray-700 font-medium">
                             {new Date().getFullYear() - selectedPriest.ordination_year} anos de sacerdócio
                           </p>
                         </div>
                       )}
 
                       {selectedPriest.parish_since && (
-                        <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--color-accent-1)', opacity: 0.2, border: '1px solid var(--color-secondary-from)' }}>
+                        <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--color-accent-1)', opacity: 0.3, border: '2px solid var(--color-secondary-from)' }}>
                           <div className="flex items-center gap-2 mb-2">
                             <Heart className="h-5 w-5" style={{ color: 'var(--color-secondary-from)' }} />
-                            <span className="text-sm font-medium" style={{ color: 'var(--color-secondary-from)' }}>Na Paróquia</span>
+                            <span className="text-sm font-bold text-gray-800">Na Catedral</span>
                           </div>
-                          <p className="text-lg font-bold" style={{ color: 'var(--color-secondary-from)' }}>Desde {selectedPriest.parish_since}</p>
-                          <p className="text-xs" style={{ color: 'var(--color-secondary-from)' }}>
+                          <p className="text-lg font-bold text-gray-900">Desde {selectedPriest.parish_since}</p>
+                          <p className="text-xs text-gray-700 font-medium">
                             {new Date().getFullYear() - selectedPriest.parish_since} anos conosco
                           </p>
                         </div>
@@ -300,7 +300,7 @@ export const PriestSection: React.FC = () => {
                       </h4>
                       <div className="prose max-w-none">
                         {selectedPriest.full_bio.split('\n').map((paragraph, index) => (
-                          <p key={index} className="text-gray-700 mb-4 leading-relaxed text-justify">
+                          <p key={index} className="text-gray-800 mb-4 leading-relaxed text-justify font-medium">
                             {paragraph}
                           </p>
                         ))}
