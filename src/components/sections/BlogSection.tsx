@@ -109,25 +109,6 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateHome }) => {
     return (
       <section id="blog" className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 sm:pt-0">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent" style={{
-              background: 'linear-gradient(to right, var(--color-primary-from), var(--color-secondary-from))',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text'
-            }}>
-              Blog da Catedral
-            </h2>
-            <p className="text-lg sm:text-xl max-w-3xl mx-auto px-4" style={{ color: 'var(--color-text-dark)' }}>
-              Acompanhe as novidades, reflexões e acontecimentos da nossa comunidade
-            </p>
-          </motion.div>
-          
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-800 mx-auto mb-4"></div>
             <p className="text-gray-600">Carregando publicações...</p>
@@ -138,28 +119,36 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateHome }) => {
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-50 overflow-y-auto">
+      {/* Cabeçalho fixo para a seção do blog */}
+      <div className="text-white shadow-lg sticky top-0 z-50 safe-area-inset-top" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+              {onNavigateHome && (
+                <Button
+                  variant="outline"
+                  onClick={onNavigateHome}
+                  className="bg-white/20 border-white/30 text-white hover:bg-white/30 flex items-center gap-1 sm:gap-2 flex-shrink-0"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline">Voltar</span>
+                </Button>
+              )}
+              <div className="min-w-0 flex-1">
+                <h1 className="text-2xl sm:text-3xl font-bold">Blog da Catedral</h1>
+                <p className="text-sm sm:text-base truncate" style={{ color: 'var(--color-accent-2)' }}>
+                  Acompanhe as novidades e reflexões da nossa comunidade
+                </p>
+              </div>
+            </div>
+            <FileText className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" style={{ color: 'var(--color-accent-2)' }} />
+          </div>
+        </div>
+      </div>
+      
       <section id="blog" className="py-20 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 sm:pt-0">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent" style={{
-              background: 'linear-gradient(to right, var(--color-primary-from), var(--color-secondary-from))',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text'
-            }}>
-              Blog da Catedral
-            </h2>
-            <p className="text-lg sm:text-xl max-w-3xl mx-auto px-4" style={{ color: 'var(--color-text-dark)' }}>
-              Acompanhe as novidades, reflexões e acontecimentos da nossa comunidade
-            </p>
-          </motion.div>
-
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {posts.length === 0 ? (
             <Card className="p-12 text-center max-w-2xl mx-auto">
               <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -187,11 +176,10 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateHome }) => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                 >
-                  {/* O Card inteiro agora é um link */}
                   <a
                     href={`#blog-post-${post.id}`}
                     onClick={(e) => {
-                      e.preventDefault(); // Impede a navegação padrão
+                      e.preventDefault();
                       handlePostClick(post);
                     }}
                     className="block"
@@ -270,33 +258,28 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateHome }) => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-white overflow-y-auto overscroll-contain"
           >
-            <div className="sticky top-0 bg-white border-b border-gray-200 z-10 shadow-sm">
-              <div className="max-w-4xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between safe-area-inset-top">
-                <div className="flex items-center gap-2 sm:gap-4 flex-1">
-                  <Button
-                    variant="outline"
-                    onClick={handleClosePost}
-                    className="flex items-center gap-1 sm:gap-2 text-sm sm:text-base flex-shrink-0"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    <span className="hidden sm:inline">Voltar</span>
-                  </Button>
-                  <div className="hidden sm:flex items-center gap-2 text-red-800">
-                    <FileText className="h-5 w-5" />
-                    <span className="font-semibold">Blog da Paróquia</span>
+            {/* NOVO: Cabeçalho do modal com o mesmo estilo */}
+            <div className="text-white shadow-lg sticky top-0 z-50 safe-area-inset-top" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))' }}>
+              <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                    <Button
+                      variant="outline"
+                      onClick={handleClosePost}
+                      className="bg-white/20 border-white/30 text-white hover:bg-white/30 flex items-center gap-1 sm:gap-2 flex-shrink-0"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      <span className="hidden sm:inline">Voltar</span>
+                    </Button>
+                    <div className="min-w-0 flex-1">
+                      <h1 className="text-2xl sm:text-3xl font-bold truncate">Postagem</h1>
+                      <p className="text-sm sm:text-base truncate" style={{ color: 'var(--color-accent-2)' }}>
+                        {selectedPost.title}
+                      </p>
+                    </div>
                   </div>
+                  <FileText className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" style={{ color: 'var(--color-accent-2)' }} />
                 </div>
-
-                <Button
-                  variant="outline"
-                  onClick={() => sharePost(selectedPost, 'native')}
-                  className="flex items-center gap-1 sm:gap-2 text-sm sm:text-base flex-shrink-0"
-                >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                  </svg>
-                  <span className="hidden md:inline">Compartilhar</span>
-                </Button>
               </div>
             </div>
 
@@ -402,6 +385,6 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateHome }) => {
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 };
