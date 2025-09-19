@@ -138,7 +138,7 @@ function App() {
           </>
         );
       case 'history':
-        return <HistorySection />;
+        return <HistorySection onBack={() => setCurrentView('home')} />;
       case 'priests':
         return <PriestSection />;
       case 'photos':

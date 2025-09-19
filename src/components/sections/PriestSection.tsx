@@ -124,7 +124,7 @@ export const PriestSection: React.FC = () => {
               </p>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:gap-6">
               {priests.map((priest, index) => (
                 <motion.div
                   key={priest.id}
@@ -145,54 +145,54 @@ export const PriestSection: React.FC = () => {
                             src={priest.photo_url}
                             alt={priest.name}
                             publicId={priest.cloudinary_public_id || undefined}
-                            width={200}
-                            height={200}
-                            quality={40}
+                            width={120}
+                            height={120}
+                            quality={35}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <User className="h-12 w-12 text-gray-400" />
+                            <User className="h-8 w-8 text-gray-400" />
                           </div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
 
                       {/* Content */}
-                      <div className="p-2 sm:p-3 flex-1 flex flex-col">
+                      <div className="p-2 flex-1 flex flex-col">
                         <div className="text-center mb-2">
-                          <h3 className="text-sm sm:text-base font-bold text-gray-800 group-hover:text-blue-800 transition-colors mb-1">
+                          <h3 className="text-xs sm:text-sm font-bold text-gray-800 group-hover:text-blue-800 transition-colors mb-1">
                             {priest.name}
                           </h3>
-                          <p className="font-semibold text-xs mb-2" style={{ color: 'var(--color-primary-from)' }}>
+                          <p className="font-semibold text-[10px] sm:text-xs mb-1" style={{ color: 'var(--color-primary-from)' }}>
                             {priest.title}
                           </p>
                         </div>
 
-                        <p className="text-gray-600 text-xs leading-relaxed mb-2 flex-1 line-clamp-2 text-center">
+                        <p className="text-gray-600 text-[10px] sm:text-xs leading-relaxed mb-2 flex-1 line-clamp-2 text-center">
                           {priest.short_bio}
                         </p>
 
                         {/* Info Cards */}
-                        <div className="space-y-1 mb-2">
+                        <div className="space-y-0.5 mb-1">
                           {priest.ordination_year && (
-                            <div className="flex items-center justify-center gap-1 text-[10px] text-gray-500">
-                              <Church className="h-3 w-3" />
+                            <div className="flex items-center justify-center gap-1 text-[9px] sm:text-[10px] text-gray-500">
+                              <Church className="h-2.5 w-2.5" />
                               <span>Ordenado em {priest.ordination_year}</span>
                             </div>
                           )}
                           {priest.parish_since && (
-                            <div className="flex items-center justify-center gap-1 text-[10px] text-gray-500">
-                              <Calendar className="h-3 w-3" />
+                            <div className="flex items-center justify-center gap-1 text-[9px] sm:text-[10px] text-gray-500">
+                              <Calendar className="h-2.5 w-2.5" />
                               <span>Na paróquia desde {priest.parish_since}</span>
                             </div>
                           )}
                         </div>
 
                         <div className="text-center">
-                          <span className="inline-flex items-center font-medium group-hover:opacity-80 transition-colors text-xs" style={{ color: 'var(--color-primary-from)' }}>
+                          <span className="inline-flex items-center font-medium group-hover:opacity-80 transition-colors text-[10px] sm:text-xs" style={{ color: 'var(--color-primary-from)' }}>
                             <span>Conhecer melhor</span>
-                            <BookOpen className="h-3 w-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                            <BookOpen className="h-2.5 w-2.5 ml-1 group-hover:translate-x-1 transition-transform" />
                           </span>
                         </div>
                       </div>
@@ -266,26 +266,26 @@ export const PriestSection: React.FC = () => {
                     {/* Cards de informação */}
                     <div className="grid sm:grid-cols-2 gap-4 mb-6">
                       {selectedPriest.ordination_year && (
-                        <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--color-accent-2)', opacity: 0.1, border: '1px solid var(--color-accent-1)' }}>
+                        <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--color-accent-2)', opacity: 0.2, border: '1px solid var(--color-primary-from)' }}>
                           <div className="flex items-center gap-2 mb-2">
                             <Church className="h-5 w-5" style={{ color: 'var(--color-primary-from)' }} />
                             <span className="text-sm font-medium" style={{ color: 'var(--color-primary-from)' }}>Ordenação</span>
                           </div>
                           <p className="text-lg font-bold" style={{ color: 'var(--color-primary-from)' }}>{selectedPriest.ordination_year}</p>
-                          <p className="text-xs" style={{ color: 'var(--color-secondary-from)' }}>
+                          <p className="text-xs" style={{ color: 'var(--color-primary-from)' }}>
                             {new Date().getFullYear() - selectedPriest.ordination_year} anos de sacerdócio
                           </p>
                         </div>
                       )}
 
                       {selectedPriest.parish_since && (
-                        <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--color-accent-1)', opacity: 0.1, border: '1px solid var(--color-accent-2)' }}>
+                        <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--color-accent-1)', opacity: 0.2, border: '1px solid var(--color-secondary-from)' }}>
                           <div className="flex items-center gap-2 mb-2">
                             <Heart className="h-5 w-5" style={{ color: 'var(--color-secondary-from)' }} />
                             <span className="text-sm font-medium" style={{ color: 'var(--color-secondary-from)' }}>Na Paróquia</span>
                           </div>
                           <p className="text-lg font-bold" style={{ color: 'var(--color-secondary-from)' }}>Desde {selectedPriest.parish_since}</p>
-                          <p className="text-xs" style={{ color: 'var(--color-primary-from)' }}>
+                          <p className="text-xs" style={{ color: 'var(--color-secondary-from)' }}>
                             {new Date().getFullYear() - selectedPriest.parish_since} anos conosco
                           </p>
                         </div>

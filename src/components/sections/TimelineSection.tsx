@@ -265,12 +265,12 @@ export const TimelineSection: React.FC = () => {
                           </div>
                           <div class="p-8">
                             <div class="flex items-center gap-3 mb-4">
-                              <div class="w-12 h-12 bg-gradient-to-r from-red-800 to-amber-600 rounded-full flex items-center justify-center">
+                              <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: linear-gradient(to right, var(--color-primary-from), var(--color-secondary-from))">
                                 <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
                               </div>
-                              <h3 class="text-3xl font-bold text-red-900">${currentEvent.year}</h3>
+                              <h3 class="text-3xl font-bold" style="color: var(--color-primary-from)">${currentEvent.year}</h3>
                             </div>
                             <h1 class="text-3xl font-bold text-gray-800 mb-6">${currentEvent.title}</h1>
                             <p class="text-gray-700 leading-relaxed text-lg">${currentEvent.description}</p>
@@ -318,7 +318,7 @@ export const TimelineSection: React.FC = () => {
                   }}
                   onMouseEnter={(e) => {
                     if (index !== currentIndex) {
-                      e.currentTarget.style.borderColor = 'var(--color-accent-1)';
+                      e.currentTarget.style.borderColor = 'var(--color-primary-from)';
                     }
                   }}
                   onMouseLeave={(e) => {

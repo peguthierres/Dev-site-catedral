@@ -2,9 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Church, Users, Heart, BookOpen, Star } from 'lucide-react';
 import { Card } from '../ui/Card';
+import { Button } from '../ui/Button';
 import { supabase, Parish } from '../../lib/supabase';
 
-export const HistorySection: React.FC = () => {
+interface HistorySectionProps {
+  onBack?: () => void;
+}
+
+export const HistorySection: React.FC<HistorySectionProps> = ({ onBack }) => {
   const [parish, setParish] = useState<Parish | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -87,6 +92,20 @@ export const HistorySection: React.FC = () => {
   return (
     <section id="history" className="py-20 bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header com botão voltar quando acessado como página separada */}
+        {onBack && (
+          <div className="mb-8">
+            <Button
+              variant="outline"
+              onClick={onBack}
+              className="flex items-center gap-2 mb-4"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar ao Início
+            </Button>
+          </div>
+        )}
+
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -256,16 +275,13 @@ export const HistorySection: React.FC = () => {
               >
                 <Card className="p-6 text-center h-full hover:shadow-lg transition-shadow duration-300">
                   <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
-                    value.color === 'red' ? 'bg-red-100' :
+                    value.color === 'red' ? 'bg-blue-100' :
                     value.color === 'blue' ? 'bg-blue-100' :
-                    value.color === 'green' ? 'bg-green-100' :
-                    'bg-amber-100'
+                    value.color === 'green' ? 'bg-blue-100' :
+                    'bg-blue-100'
                   }`}>
                     <value.icon className={`h-8 w-8 ${
-                      value.color === 'red' ? 'text-red-800' :
-                      value.color === 'blue' ? 'text-blue-800' :
-                      value.color === 'green' ? 'text-green-800' :
-                      'text-amber-800'
+                      'text-blue-800'
                     }`} />
                   </div>
                   <h4 className="text-lg font-bold text-gray-800 mb-3">{value.title}</h4>

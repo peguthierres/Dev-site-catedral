@@ -140,7 +140,9 @@ export const SlidesSection: React.FC = () => {
 
   if (isLoading) {
     return (
-      <section className="relative w-full min-h-screen flex items-center justify-center bg-gradient-to-br from-red-900 to-red-800">
+      <section className="relative w-full min-h-screen flex items-center justify-center" style={{
+        background: 'linear-gradient(135deg, var(--color-primary-from), var(--color-primary-to))'
+      }}>
         <div className="text-center text-white px-4">
           <div className="animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-b-2 border-white mx-auto mb-4"></div>
           <p className="text-base sm:text-lg">Carregando slides...</p>
@@ -151,16 +153,18 @@ export const SlidesSection: React.FC = () => {
 
   if (slides.length === 0) {
     return (
-      <section className="relative w-full min-h-screen flex items-center justify-center bg-gradient-to-br from-red-900 to-red-800">
+      <section className="relative w-full min-h-screen flex items-center justify-center" style={{
+        background: 'linear-gradient(135deg, var(--color-primary-from), var(--color-primary-to))'
+      }}>
         <div className="text-center text-white max-w-2xl mx-auto px-4">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6">
-            Paróquia Senhor Santo Cristo dos Milagres
+            Catedral de São Miguel Arcanjo
           </h1>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-amber-200 mb-2 sm:mb-4">
-            40 Anos de Fé e Comunhão
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-2 sm:mb-4" style={{ color: 'var(--color-accent-2)' }}>
+            Tradição e Fé
           </p>
-          <p className="text-sm sm:text-base md:text-lg text-amber-100">
-            Cid. Tiradentes, São Paulo
+          <p className="text-sm sm:text-base md:text-lg" style={{ color: 'var(--color-accent-1)' }}>
+            São Miguel Paulista, São Paulo
           </p>
         </div>
       </section>

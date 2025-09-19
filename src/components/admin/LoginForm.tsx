@@ -85,7 +85,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
             </Button>
 
             <div className="text-center mb-8">
-              <Church className="h-12 w-12 text-blue-800 mx-auto mb-4" />
+              <Church className="h-12 w-12 mx-auto mb-4" style={{ color: 'var(--color-primary-from)' }} />
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
                 Painel Administrativo
               </h2>
