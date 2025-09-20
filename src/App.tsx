@@ -60,8 +60,28 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [parish, setParish] = useState<any>(null);
 
   useEffect(() => {
+    // Load parish data for header logo
+    const loadParishData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('parishes')
+          .select('*')
+          .limit(1)
+          .single();
+
+        if (data) {
+          setParish(data);
+        }
+      } catch (error) {
+        console.error('Error loading parish data:', error);
+      }
+    };
+
+    loadParishData();
+
     // Load theme settings
     const loadTheme = async () => {
       try {
@@ -205,7 +225,7 @@ function App() {
       />
 
       {/* Header - only show on home view */}
-      {currentView === 'home' && <Header onNavigate={handleNavigate} />}
+      {currentView === 'home' && <Header onNavigate={handleNavigate} parish={parish} />}
 
       {/* Main Content */}
       <main className="relative">
