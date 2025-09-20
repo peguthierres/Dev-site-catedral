@@ -120,12 +120,12 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateHome }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-y-auto">
-      {/* Cabeçalho fixo para a seção do blog */}
-      <div className="text-white shadow-lg sticky top-0 z-50 safe-area-inset-top" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-              {onNavigateHome && (
+      {/* Cabeçalho - apenas quando acessado como página individual */}
+      {onNavigateHome && (
+        <div className="text-white shadow-lg sticky top-0 z-50 safe-area-inset-top" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))' }}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
                 <Button
                   variant="outline"
                   onClick={onNavigateHome}
@@ -134,21 +134,43 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateHome }) => {
                   <ArrowLeft className="h-4 w-4" />
                   <span className="hidden sm:inline">Voltar</span>
                 </Button>
-              )}
-              <div className="min-w-0 flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold">Blog da Catedral</h1>
-                <p className="text-sm sm:text-base truncate" style={{ color: 'var(--color-accent-2)' }}>
-                  Acompanhe as novidades e reflexões da nossa comunidade
-                </p>
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-2xl sm:text-3xl font-bold">Blog da Catedral</h1>
+                  <p className="text-sm sm:text-base truncate" style={{ color: 'var(--color-accent-2)' }}>
+                    Acompanhe as novidades e reflexões da nossa comunidade
+                  </p>
+                </div>
               </div>
+              <FileText className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" style={{ color: 'var(--color-accent-2)' }} />
             </div>
-            <FileText className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" style={{ color: 'var(--color-accent-2)' }} />
           </div>
         </div>
-      </div>
+      )}
       
       <section id="blog" className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Título da seção - apenas na página inicial */}
+          {!onNavigateHome && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent" style={{
+                background: 'linear-gradient(to right, var(--color-primary-from), var(--color-secondary-from))',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text'
+              }}>
+                Blog da Catedral
+              </h2>
+              <p className="text-xl max-w-3xl mx-auto" style={{ color: 'var(--color-text-dark)' }}>
+                Acompanhe as novidades e reflexões da nossa comunidade
+              </p>
+            </motion.div>
+          )}
+
           {posts.length === 0 ? (
             <Card className="p-12 text-center max-w-2xl mx-auto">
               <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
