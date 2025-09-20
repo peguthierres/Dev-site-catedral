@@ -15,6 +15,7 @@ interface ThemeSettings {
   site_accent_color_2: string;
   site_button_text_color: string;
   site_header_text_color: string;
+  site_header_font_family: string;
 }
 
 // Cache das configurações de tema
@@ -38,6 +39,7 @@ const defaultTheme: ThemeSettings = {
   site_accent_color_2: '#93c5fd',
   site_button_text_color: '#FFFFFF',
   site_header_text_color: '#FFFFFF',
+  site_header_font_family: 'Inter',
 };
 
 // Buscar configurações de tema
@@ -93,6 +95,7 @@ export const applyThemeToDocument = (theme: ThemeSettings) => {
   root.style.setProperty('--color-accent-2', theme.site_accent_color_2);
   root.style.setProperty('--color-button-text', theme.site_button_text_color);
   root.style.setProperty('--color-header-text', theme.site_header_text_color);
+  root.style.setProperty('--site-header-font-family', `'${theme.site_header_font_family}', system-ui, -apple-system, sans-serif`);
 };
 
 // Invalidar cache do tema

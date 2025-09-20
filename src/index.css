@@ -20,6 +20,7 @@
     --color-accent-2: #93c5fd;
     --color-button-text: #FFFFFF;
     --color-header-text: #FFFFFF;
+    --site-header-font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
   html {

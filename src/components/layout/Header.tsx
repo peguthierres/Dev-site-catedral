@@ -68,11 +68,20 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, parish }) => {
               <Church className="h-6 w-6 sm:h-8 sm:w-8" style={{ color: 'var(--color-accent-2)' }} />
             )}
             <div className="hidden sm:block">
-              <h1 className="font-bold text-sm sm:text-lg" style={{ color: 'var(--color-header-text)' }}>Catedral São Miguel Arcanjo</h1>
-              <p className="text-sm" style={{ color: 'var(--color-accent-2)' }}>São Miguel Paulista</p>
+              <h1 className="font-bold text-sm sm:text-lg" style={{ 
+                color: 'var(--color-header-text)',
+                fontFamily: 'var(--site-header-font-family)'
+              }}>Catedral São Miguel Arcanjo</h1>
+              <p className="text-sm" style={{ 
+                color: 'var(--color-accent-2)',
+                fontFamily: 'var(--site-header-font-family)'
+              }}>São Miguel Paulista</p>
             </div>
             <div className="block sm:hidden">
-              <h1 className="font-bold text-sm" style={{ color: 'var(--color-header-text)' }}>Catedral São Miguel</h1>
+              <h1 className="font-bold text-sm" style={{ 
+                color: 'var(--color-header-text)',
+                fontFamily: 'var(--site-header-font-family)'
+              }}>Catedral São Miguel</h1>
             </div>
           </motion.div>
 

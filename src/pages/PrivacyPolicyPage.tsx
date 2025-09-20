@@ -12,7 +12,7 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onBack }) 
   return (
     <div className="min-h-screen bg-gray-50 overflow-y-auto">
       {/* Header */}
-      <div className="bg-gradient-to-r from-red-900 to-red-800 text-white shadow-lg sticky top-0 z-50 safe-area-inset-top">
+      <div className="text-white shadow-lg sticky top-0 z-50 safe-area-inset-top" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
@@ -26,12 +26,12 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onBack }) 
               </Button>
               <div className="min-w-0 flex-1">
                 <h1 className="text-2xl sm:text-3xl font-bold">Política de Privacidade</h1>
-                <p className="text-amber-200 text-sm sm:text-base truncate">
+                <p className="text-sm sm:text-base truncate" style={{ color: 'var(--color-accent-2)' }}>
                   Conforme a Lei Geral de Proteção de Dados (LGPD)
                 </p>
               </div>
             </div>
-            <Shield className="h-8 w-8 sm:h-12 sm:w-12 text-blue-400 flex-shrink-0" />
+            <Shield className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" style={{ color: 'var(--color-accent-2)' }} />
           </div>
         </div>
       </div>

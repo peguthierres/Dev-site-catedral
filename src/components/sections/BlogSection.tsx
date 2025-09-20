@@ -163,7 +163,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateHome }) => {
                 WebkitBackgroundClip: 'text',
                 backgroundClip: 'text'
               }}>
-                Blog da Catedral
+                Mensagem de Fé
               </h2>
               <p className="text-xl max-w-3xl mx-auto" style={{ color: 'var(--color-text-dark)' }}>
                 Acompanhe as novidades e reflexões da nossa comunidade

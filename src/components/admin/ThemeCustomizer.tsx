@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Palette, RefreshCw, Eye, RotateCcw, Paintbrush, Type, Square } from 'lucide-react';
+import { Save, Palette, RefreshCw, Eye, RotateCcw, Paintbrush, Type, Square, Contact as Font } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { supabase } from '../../lib/supabase';
@@ -21,6 +21,7 @@ interface ThemeSettings {
   site_accent_color_2: string;
   site_button_text_color: string;
   site_header_text_color: string;
+  site_header_font_family: string;
 }
 
 const defaultSettings: ThemeSettings = {
@@ -38,6 +39,7 @@ const defaultSettings: ThemeSettings = {
   site_accent_color_2: '#93c5fd',
   site_button_text_color: '#FFFFFF',
   site_header_text_color: '#FFFFFF',
+  site_header_font_family: 'Inter',
 };
 
 // Componente auxiliar para entrada de cor

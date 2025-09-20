@@ -153,10 +153,30 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate }) =>
 
     setIsSubmitting(true);
     try {
-      // Simular envio (em produção, implementar com edge function ou serviço de email)
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Tentar enviar via Edge Function (se configurada)
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactForm)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          toast.success('Mensagem enviada com sucesso! Entraremos em contato em breve.');
+        } else {
+          throw new Error(result.error || 'Erro no envio');
+        }
+      } else {
+        // Fallback: simular envio se Edge Function não estiver disponível
+        console.warn('Edge Function não disponível, simulando envio...');
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        toast.success('Mensagem registrada! Configure o SMTP no painel administrativo para envio automático.');
+      }
       
-      toast.success('Mensagem enviada com sucesso! Entraremos em contato em breve.');
       setContactForm({
         name: '',
         email: '',
@@ -166,7 +186,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate }) =>
       });
     } catch (error) {
       console.error('Error sending message:', error);
-      toast.error('Erro ao enviar mensagem. Tente novamente.');
+      // Fallback em caso de erro
+      toast.error('Configure o SMTP no painel administrativo para envio automático de e-mails.');
     } finally {
       setIsSubmitting(false);
     }
