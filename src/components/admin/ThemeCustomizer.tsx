@@ -177,16 +177,20 @@ export const ThemeCustomizer: React.FC = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const updates = Object.entries(settings).map(([key, value]) => ({
-        key,
-        value: typeof value === 'boolean' ? value.toString() : value,
-        updated_at: new Date().toISOString(),
-      }));
-
-      for (const update of updates) {
+      // Save each setting individually using insert with ON CONFLICT DO UPDATE
+      for (const [key, value] of Object.entries(settings)) {
+        const settingValue = typeof value === 'boolean' ? value.toString() : value;
+        
         const { error } = await supabase
           .from('system_settings')
-          .upsert(update, { onConflict: 'key' });
+          .upsert({
+            key,
+            value: settingValue,
+            description: `Theme setting: ${key}`,
+            is_encrypted: false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
 
         if (error) throw error;
       }
