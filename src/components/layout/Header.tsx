@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Church } from 'lucide-react';
+import { Parish } from '../../lib/supabase';
 
 interface HeaderProps {
   onNavigate: (section: string) => void;
+  parish?: Parish | null;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
+export const Header: React.FC<HeaderProps> = ({ onNavigate, parish }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuItems = [
@@ -50,7 +52,15 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
             onClick={() => handleNavigate('home')}
             whileHover={{ scale: 1.05 }}
           >
-            <Church className="h-6 w-6 sm:h-8 sm:w-8" style={{ color: 'var(--color-accent-2)' }} />
+            {parish?.logo_url ? (
+              <img
+                src={parish.logo_url}
+                alt="Logo da Catedral"
+                className="h-8 w-8 sm:h-10 sm:w-10 object-contain rounded-md"
+              />
+            ) : (
+              <Church className="h-6 w-6 sm:h-8 sm:w-8" style={{ color: 'var(--color-accent-2)' }} />
+            )}
             <div className="hidden sm:block">
               <h1 className="font-bold text-sm sm:text-lg" style={{ color: 'var(--color-header-text)' }}>Catedral São Miguel Arcanjo</h1>
               <p className="text-sm" style={{ color: 'var(--color-accent-2)' }}>São Miguel Paulista</p>
