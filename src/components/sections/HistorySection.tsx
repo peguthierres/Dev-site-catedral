@@ -6,7 +6,7 @@ import { Button } from '../ui/Button';
 import { supabase, Parish } from '../../lib/supabase';
 
 interface HistorySectionProps {
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 export const HistorySection: React.FC<HistorySectionProps> = ({ onBack }) => {
@@ -88,34 +88,56 @@ export const HistorySection: React.FC<HistorySectionProps> = ({ onBack }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-y-auto">
-      {/* Header replicado da CelebrationsPage */}
-      <div className="text-white shadow-lg sticky top-0 z-50 safe-area-inset-top" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-              <Button
-                variant="outline"
-                onClick={onBack}
-                className="bg-white/20 border-white/30 text-white hover:bg-white/30 flex items-center gap-1 sm:gap-2 flex-shrink-0"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Voltar</span>
-              </Button>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold">Nossa História</h1>
-                <p className="text-sm sm:text-base truncate" style={{ color: 'var(--color-accent-2)' }}>
-                  {`Mais de ${new Date().getFullYear() - parish.founded_year} anos de fé e tradição`}
-                </p>
+      {/* Header - apenas quando acessada como página individual */}
+      {onBack && (
+        <div className="text-white shadow-lg sticky top-0 z-50 safe-area-inset-top" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))' }}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                <Button
+                  variant="outline"
+                  onClick={onBack}
+                  className="bg-white/20 border-white/30 text-white hover:bg-white/30 flex items-center gap-1 sm:gap-2 flex-shrink-0"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline">Voltar</span>
+                </Button>
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-2xl sm:text-3xl font-bold">Nossa História</h1>
+                  <p className="text-sm sm:text-base truncate" style={{ color: 'var(--color-accent-2)' }}>
+                    {parish && `Mais de ${new Date().getFullYear() - parish.founded_year} anos de fé e tradição`}
+                  </p>
+                </div>
               </div>
+              <Church className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" style={{ color: 'var(--color-accent-2)' }} />
             </div>
-            <Church className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" style={{ color: 'var(--color-accent-2)' }} />
           </div>
         </div>
-      </div>
+      )}
       
-      <section id="history" className="py-20 bg-gradient-to-b from-white to-gray-50">
+      <section id="history" className={`${onBack ? 'py-20' : 'py-20'} bg-gradient-to-b from-white to-gray-50`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* O conteúdo do cabeçalho da seção original foi removido para evitar duplicidade */}
+          {/* Título da seção - apenas na página inicial */}
+          {!onBack && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent" style={{
+                background: 'linear-gradient(to right, var(--color-primary-from), var(--color-secondary-from))',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text'
+              }}>
+                Nossa História
+              </h2>
+              <p className="text-xl max-w-3xl mx-auto" style={{ color: 'var(--color-text-dark)' }}>
+                Mais de 400 anos de fé, tradição e serviço à comunidade
+              </p>
+            </motion.div>
+          )}
 
           <div className="grid lg:grid-cols-3 gap-8">
             <motion.div
