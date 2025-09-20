@@ -52,7 +52,13 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, parish }) => {
             onClick={() => handleNavigate('home')}
             whileHover={{ scale: 1.05 }}
           >
-            {parish?.logo_url ? (
+            {parish?.logo_url_light ? (
+              <img
+                src={parish.logo_url_light}
+                alt="Logo da Catedral"
+                className="h-8 w-8 sm:h-10 sm:w-10 object-contain rounded-md"
+              />
+            ) : parish?.logo_url ? (
               <img
                 src={parish.logo_url}
                 alt="Logo da Catedral"

@@ -15,10 +15,16 @@ export const ParishManager: React.FC = () => {
     address: '',
     phone: '',
     email: '',
-    logo_url: null
+    logo_url: null,
+    logo_url_dark: null,
+    logo_url_light: null
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isUploading, setIsUploading] = useState({
+    original: false,
+    dark: false,
+    light: false
+  });
 
   useEffect(() => {
     fetchParishData();
@@ -28,7 +34,7 @@ export const ParishManager: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('parishes')
-        .select('*')
+        .select('*, logo_url_dark, logo_url_light, cloudinary_public_id_dark, cloudinary_public_id_light')
         .limit(1)
         .single();
 
@@ -92,25 +98,45 @@ export const ParishManager: React.FC = () => {
   };
 
   // This is the single, corrected image upload function
-  const handleCloudinaryUpload = async (result: { publicId: string; url: string; secureUrl: string }) => {
-    setParish(prev => ({ 
-      ...prev, 
-      logo_url: result.secureUrl,
-      cloudinary_public_id: result.publicId 
-    }));
+  const handleCloudinaryUpload = async (result: { publicId: string; url: string; secureUrl: string }, logoType: 'original' | 'dark' | 'light' = 'original') => {
+    if (logoType === 'dark') {
+      setParish(prev => ({ 
+        ...prev, 
+        logo_url_dark: result.secureUrl,
+        cloudinary_public_id_dark: result.publicId 
+      }));
+    } else if (logoType === 'light') {
+      setParish(prev => ({ 
+        ...prev, 
+        logo_url_light: result.secureUrl,
+        cloudinary_public_id_light: result.publicId 
+      }));
+    } else {
+      setParish(prev => ({ 
+        ...prev, 
+        logo_url: result.secureUrl,
+        cloudinary_public_id: result.publicId 
+      }));
+    }
     toast.success('Logo carregado com sucesso!');
   };
 
-  const handleSupabaseUpload = async (result: { url: string; path: string }) => {
-    setParish(prev => ({ ...prev, logo_url: result.url }));
+  const handleSupabaseUpload = async (result: { url: string; path: string }, logoType: 'original' | 'dark' | 'light' = 'original') => {
+    if (logoType === 'dark') {
+      setParish(prev => ({ ...prev, logo_url_dark: result.url }));
+    } else if (logoType === 'light') {
+      setParish(prev => ({ ...prev, logo_url_light: result.url }));
+    } else {
+      setParish(prev => ({ ...prev, logo_url: result.url }));
+    }
     toast.success('Logo carregado com sucesso!');
   };
 
-  const handleLogoUpload = async (files: FileList | null) => {
+  const handleLogoUpload = async (files: FileList | null, logoType: 'original' | 'dark' | 'light' = 'original') => {
     const file = files?.[0];
     if (!file) return;
 
-    setIsUploading(true);
+    setIsUploading(prev => ({ ...prev, [logoType]: true }));
     try {
       // Validate file type
       if (!file.type.startsWith('image/')) {
@@ -126,7 +152,7 @@ export const ParishManager: React.FC = () => {
 
       const fileExt = file.name.split('.').pop();
       // Ensure a consistent file name for the logo, using upsert to replace it
-      const fileName = `logo.${fileExt}`;
+      const fileName = `logo-${logoType}.${fileExt}`;
       const filePath = `logos/${fileName}`;
 
       // Upload the file, using upsert to overwrite if it exists
@@ -141,13 +167,19 @@ export const ParishManager: React.FC = () => {
         .from('parish-photos')
         .getPublicUrl(filePath);
 
-      setParish(prev => ({ ...prev, logo_url: urlData.publicUrl }));
+      if (logoType === 'dark') {
+        setParish(prev => ({ ...prev, logo_url_dark: urlData.publicUrl }));
+      } else if (logoType === 'light') {
+        setParish(prev => ({ ...prev, logo_url_light: urlData.publicUrl }));
+      } else {
+        setParish(prev => ({ ...prev, logo_url: urlData.publicUrl }));
+      }
       toast.success('Logo carregado com sucesso!');
     } catch (error) {
       console.error('Error uploading logo:', error);
       toast.error('Erro ao carregar logo');
     } finally {
-      setIsUploading(false);
+      setIsUploading(prev => ({ ...prev, [logoType]: false }));
     }
   };
 
@@ -236,47 +268,229 @@ export const ParishManager: React.FC = () => {
 
         {/* Logo Upload */}
         <Card className="p-6">
-          <h4 className="text-lg font-semibold text-gray-800 mb-4">Logo da Catedral</h4>
+          <h4 className="text-lg font-semibold text-gray-800 mb-4">Logos da Catedral</h4>
           
-          <div className="text-center">
-            {parish.logo_url ? (
-              <div className="mb-4">
-                <img
-                  src={parish.logo_url}
-                  alt="Logo da Catedral"
-                  className="w-48 h-48 object-contain mx-auto rounded-lg border border-gray-200"
-                />
-              </div>
-            ) : (
-              <div className="w-48 h-48 mx-auto mb-4 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-                <Church className="h-12 w-12 text-gray-400" />
-              </div>
-            )}
-            
-            <FileUpload
-              onCloudinaryUpload={handleCloudinaryUpload}
-              onSupabaseUpload={handleSupabaseUpload}
-              onFileSelect={handleLogoUpload}
-              disabled={isUploading}
-            >
-              <Button variant="secondary" disabled={isUploading}>
-                <Church className="h-4 w-4" />
-                {isUploading ? 'Carregando...' : 'Carregar Logo'}
-              </Button>
-            </FileUpload>
-            {parish.logo_url && ( // Option to remove logo if one is present
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setParish(prev => ({ ...prev, logo_url: null }))}
-                    className="text-red-600 mt-2"
-                >
-                    Remover Logo
+          <div className="space-y-6">
+            {/* Logo Original */}
+            <div className="text-center">
+              <h5 className="text-md font-medium text-gray-700 mb-3">Logo Principal (Uso Geral)</h5>
+              {parish.logo_url ? (
+                <div className="mb-4">
+                  <img
+                    src={parish.logo_url}
+                    alt="Logo Principal da Catedral"
+                    className="w-32 h-32 object-contain mx-auto rounded-lg border border-gray-200"
+                  />
+                </div>
+              ) : (
+                <div className="w-32 h-32 mx-auto mb-4 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                  <Church className="h-8 w-8 text-gray-400" />
+                </div>
+              )}
+              
+              <FileUpload
+                onCloudinaryUpload={(result) => handleCloudinaryUpload(result, 'original')}
+                onSupabaseUpload={(result) => handleSupabaseUpload(result, 'original')}
+                onFileSelect={(files) => handleLogoUpload(files, 'original')}
+                disabled={isUploading.original}
+                folder="logos"
+              >
+                <Button variant="secondary" disabled={isUploading.original} size="sm">
+                  <Church className="h-4 w-4" />
+                  {isUploading.original ? 'Carregando...' : 'Carregar Logo Principal'}
                 </Button>
-            )}
-            <p className="text-xs text-gray-500 mt-2">
-              Formatos aceitos: JPG, PNG, SVG
-            </p>
+              </FileUpload>
+              {parish.logo_url && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setParish(prev => ({ ...prev, logo_url: null, cloudinary_public_id: null }))}
+                  className="text-red-600 mt-2"
+                >
+                  Remover
+                </Button>
+              )}
+            </div>
+
+            {/* Logo para Fundo Claro (Logo Escuro) */}
+            <div className="text-center">
+              <h5 className="text-md font-medium text-gray-700 mb-3">Logo para Fundo Claro (Logo Escuro)</h5>
+              {parish.logo_url_dark ? (
+                <div className="mb-4">
+                  <div className="bg-white p-4 rounded-lg border border-gray-200 inline-block">
+                    <img
+                      src={parish.logo_url_dark}
+                      alt="Logo Escuro da Catedral"
+                      className="w-32 h-32 object-contain"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="w-32 h-32 mx-auto mb-4 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-white">
+                  <Church className="h-8 w-8 text-gray-400" />
+                </div>
+              )}
+              
+              <FileUpload
+                onCloudinaryUpload={(result) => handleCloudinaryUpload(result, 'dark')}
+                onSupabaseUpload={(result) => handleSupabaseUpload(result, 'dark')}
+                onFileSelect={(files) => handleLogoUpload(files, 'dark')}
+                disabled={isUploading.dark}
+                folder="logos"
+              >
+                <Button variant="outline" disabled={isUploading.dark} size="sm">
+                  <Church className="h-4 w-4" />
+                  {isUploading.dark ? 'Carregando...' : 'Carregar Logo Escuro'}
+                </Button>
+              </FileUpload>
+              {parish.logo_url_dark && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setParish(prev => ({ ...prev, logo_url_dark: null, cloudinary_public_id_dark: null }))}
+                  className="text-red-600 mt-2"
+                >
+                  Remover
+                </Button>
+              )}
+              <p className="text-xs text-gray-500 mt-2">
+                Recomendado: Logo escuro/colorido para usar em fundos claros
+              </p>
+            </div>
+
+            {/* Logo para Fundo Escuro (Logo Claro) */}
+            <div className="text-center">
+              <h5 className="text-md font-medium text-gray-700 mb-3">Logo para Fundo Escuro (Logo Claro)</h5>
+              {parish.logo_url_light ? (
+                <div className="mb-4">
+                  <div className="bg-gray-800 p-4 rounded-lg border border-gray-200 inline-block">
+                    <img
+                      src={parish.logo_url_light}
+                      alt="Logo Claro da Catedral"
+                      className="w-32 h-32 object-contain"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="w-32 h-32 mx-auto mb-4 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-800">
+                  <Church className="h-8 w-8 text-gray-400" />
+                </div>
+              )}
+              
+              <FileUpload
+                onCloudinaryUpload={(result) => handleCloudinaryUpload(result, 'light')}
+                onSupabaseUpload={(result) => handleSupabaseUpload(result, 'light')}
+                onFileSelect={(files) => handleLogoUpload(files, 'light')}
+                disabled={isUploading.light}
+                folder="logos"
+              >
+                <Button variant="outline" disabled={isUploading.light} size="sm">
+                  <Church className="h-4 w-4" />
+                  {isUploading.light ? 'Carregando...' : 'Carregar Logo Claro'}
+                </Button>
+              </FileUpload>
+              {parish.logo_url_light && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setParish(prev => ({ ...prev, logo_url_light: null, cloudinary_public_id_light: null }))}
+                  className="text-red-600 mt-2"
+                >
+                  Remover
+                </Button>
+              )}
+              <p className="text-xs text-gray-500 mt-2">
+                Recomendado: Logo branco/claro para usar no cabeçalho (fundo escuro)
+              </p>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h6 className="font-semibold text-blue-800 mb-2">💡 Dicas para Logos:</h6>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• <strong>Logo Principal:</strong> Versão colorida padrão</li>
+                <li>• <strong>Logo Escuro:</strong> Para fundos claros (rodapé, seções brancas)</li>
+                <li>• <strong>Logo Claro:</strong> Para fundos escuros (cabeçalho azul)</li>
+                <li>• <strong>Formato:</strong> PNG com fundo transparente funciona melhor</li>
+                <li>• <strong>Tamanho:</strong> Mínimo 200x200px para qualidade</li>
+              </ul>
+            </div>
+          </div>
+        </Card>
+
+        {/* Preview dos Logos */}
+        <Card className="p-6">
+          <h4 className="text-lg font-semibold text-gray-800 mb-4">Preview dos Logos</h4>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Preview Fundo Claro */}
+            <div className="text-center">
+              <h5 className="text-sm font-medium text-gray-700 mb-3">Em Fundo Claro</h5>
+              <div className="bg-white border border-gray-200 rounded-lg p-6 h-32 flex items-center justify-center">
+                {parish.logo_url_dark ? (
+                  <img
+                    src={parish.logo_url_dark}
+                    alt="Preview Logo Escuro"
+                    className="max-w-full max-h-full object-contain"
+                  />
+                ) : parish.logo_url ? (
+                  <img
+                    src={parish.logo_url}
+                    alt="Preview Logo Principal"
+                    className="max-w-full max-h-full object-contain"
+                  />
+                ) : (
+                  <Church className="h-8 w-8 text-gray-400" />
+                )}
+              </div>
+            </div>
+
+            {/* Preview Fundo Escuro */}
+            <div className="text-center">
+              <h5 className="text-sm font-medium text-gray-700 mb-3">Em Fundo Escuro (Cabeçalho)</h5>
+              <div className="bg-gray-800 border border-gray-600 rounded-lg p-6 h-32 flex items-center justify-center">
+                {parish.logo_url_light ? (
+                  <img
+                    src={parish.logo_url_light}
+                    alt="Preview Logo Claro"
+                    className="max-w-full max-h-full object-contain"
+                  />
+                ) : parish.logo_url ? (
+                  <img
+                    src={parish.logo_url}
+                    alt="Preview Logo Principal"
+                    className="max-w-full max-h-full object-contain"
+                  />
+                ) : (
+                  <Church className="h-8 w-8 text-gray-400" />
+                )}
+              </div>
+            </div>
+
+            {/* Preview Rodapé */}
+            <div className="text-center">
+              <h5 className="text-sm font-medium text-gray-700 mb-3">No Rodapé</h5>
+              <div className="bg-gray-100 border border-gray-200 rounded-lg p-6 h-32 flex items-center justify-center">
+                {parish.logo_url_dark ? (
+                  <img
+                    src={parish.logo_url_dark}
+                    alt="Preview Logo Rodapé"
+                    className="max-w-full max-h-full object-contain opacity-80"
+                  />
+                ) : parish.logo_url ? (
+                  <img
+                    src={parish.logo_url}
+                    alt="Preview Logo Principal"
+                    className="max-w-full max-h-full object-contain opacity-80"
+                  />
+                ) : (
+                  <img
+                    src="/footer.webp"
+                    alt="Footer padrão"
+                    className="max-w-full max-h-full object-contain opacity-80"
+                  />
+                )}
+              </div>
+            </div>
           </div>
         </Card>
       </div>

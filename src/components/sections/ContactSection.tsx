@@ -606,7 +606,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate }) =>
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => window.open('https://www.facebook.com/catedralsaomiguel', '_blank')}
+                  onClick={() => window.open('https://www.facebook.com/catedraldesaomiguelarcanjo', '_blank')}
                   className="flex items-center justify-center gap-2 hover:opacity-80"
                   style={{ color: 'var(--color-primary-from)' }}
                 >
@@ -618,7 +618,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate }) =>
                 
                 <Button
                   variant="outline"
-                  onClick={() => window.open('https://www.instagram.com/catedralsaomiguel', '_blank')}
+                  onClick={() => window.open('https://www.instagram.com/catedral_sm', '_blank')}
                   className="flex items-center justify-center gap-2 hover:opacity-80"
                   style={{ color: 'var(--color-primary-from)' }}
                 >
@@ -643,13 +643,30 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate }) =>
           <Card className="p-6 bg-gray-100">
             {/* Logo do rodapé */}
             <div className="text-center mb-4">
-              <img
-                src="/footer.webp"
-                alt="Logo da Catedral"
-                className="w-24 h-auto mx-auto object-contain opacity-80"
-              />
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-gray-600">
+              {/* Logo do rodapé */}
+              {parish?.logo_url_dark ? (
+                <img
+                  src={parish.logo_url_dark}
+                  alt="Logo da Catedral"
+                  className="w-16 h-auto object-contain opacity-80"
+                />
+              ) : parish?.logo_url ? (
+                <img
+                  src={parish.logo_url}
+                  alt="Logo da Catedral"
+                  className="w-16 h-auto object-contain opacity-80"
+                />
+              ) : (
+                <img
+                  src="/footer.webp"
+                  alt="Logo da Catedral"
+                  className="w-24 h-auto object-contain opacity-80"
+                />
+              )}
+            </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-gray-600 mt-4">
               <button
                 onClick={() => onNavigate('privacy-policy')}
                 className="hover:text-red-800 transition-colors underline"

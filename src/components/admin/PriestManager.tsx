@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit, Trash2, Save, X, User, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, User, Image as ImageIcon, Church, Calendar, Heart } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { FileUpload } from '../ui/FileUpload';
@@ -171,6 +171,7 @@ export const PriestManager: React.FC = () => {
     setEditingPriest(prev => prev ? { ...prev, photo_url: result.url } : null);
     toast.success('Foto carregada com sucesso!');
   };
+  
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -221,11 +222,22 @@ export const PriestManager: React.FC = () => {
                     <h4 className="text-lg font-semibold text-gray-800 mb-1">{priest.name}</h4>
                     <p className="text-red-800 font-medium text-sm mb-2">{priest.title}</p>
                     <p className="text-gray-600 text-sm mb-2 line-clamp-2">{priest.short_bio}</p>
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
-                      {priest.ordination_year && <span>Ordenado: {priest.ordination_year}</span>}
-                      {priest.parish_since && <span>Na paróquia: {priest.parish_since}</span>}
-                      <span>{priest.is_active ? 'Ativo' : 'Inativo'}</span>
+                    {/* AQUI ESTÁ A SEÇÃO CORRIGIDA */}
+                    <div className="flex items-center gap-4 text-xs text-gray-700">
+                      {priest.ordination_year && (
+                        <div className="flex items-center gap-1">
+                          <Church className="h-3 w-3 text-red-800" />
+                          <span>Ordenado: {priest.ordination_year}</span>
+                        </div>
+                      )}
+                      {priest.parish_since && (
+                        <div className="flex items-center gap-1">
+                          <Heart className="h-3 w-3 text-red-800" />
+                          <span>Na paróquia: {priest.parish_since}</span>
+                        </div>
+                      )}
                     </div>
+                    {/* FIM DA SEÇÃO CORRIGIDA */}
                   </div>
                   <div className="flex gap-2">
                     <Button

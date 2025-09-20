@@ -156,7 +156,11 @@ export interface Parish {
   phone: string;
   email: string;
   logo_url: string | null;
+  logo_url_dark: string | null;
+  logo_url_light: string | null;
   cloudinary_public_id?: string | null;
+  cloudinary_public_id_dark?: string | null;
+  cloudinary_public_id_light?: string | null;
   created_at: string;
   updated_at: string;
 }
