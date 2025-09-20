@@ -11,7 +11,7 @@ export const ParishManager: React.FC = () => {
   const [parish, setParish] = useState<Partial<Parish>>({
     name: '',
     history: '',
-    founded_year: 1985,
+    founded_year: 1560,
     address: '',
     phone: '',
     email: '',
