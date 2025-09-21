@@ -42,6 +42,33 @@ const defaultSettings: ThemeSettings = {
   site_header_font_family: 'Inter',
 };
 
+// Lista de fontes disponíveis para o usuário
+const availableFonts = [
+  'Inter',
+  'Roboto',
+  'Open Sans',
+  'Lato',
+  'Montserrat',
+  'Poppins',
+  'Playfair Display',
+  'Merriweather',
+  'Lora',
+  'Source Sans Pro',
+  'Nunito',
+  'Crimson Text',
+  'Libre Baskerville',
+  'Oswald',
+  'Noto Sans',
+  'Cinzel',
+  'Tangerine',
+  'Old Standard TT',
+  'EB Garamond',
+  'UnifrakturMaguntia',
+  'Fira Sans',
+  'Raleway',
+  'DM Serif Display',
+];
+
 // Componente auxiliar para entrada de cor
 const ColorInput: React.FC<{
   label: string;
@@ -98,7 +125,7 @@ export const ThemeCustomizer: React.FC = () => {
     'site_accent_color_2',
     'site_button_text_color',
     'site_header_text_color',
-    'site_header_font_family', // A fonte do cabeçalho também será buscada
+    'site_header_font_family',
   ];
 
   useEffect(() => {
@@ -163,7 +190,7 @@ export const ThemeCustomizer: React.FC = () => {
     root.style.setProperty('--color-accent-1', themeSettings.site_accent_color_1);
     root.style.setProperty('--color-accent-2', themeSettings.site_accent_color_2);
     
-    // NOVO: Aplicar a fonte do cabeçalho
+    // Aplicar a fonte do cabeçalho
     root.style.setProperty('--site-header-font-family', themeSettings.site_header_font_family);
   };
 
@@ -440,7 +467,6 @@ export const ThemeCustomizer: React.FC = () => {
             description="Cor do texto no cabeçalho do site"
             handleChange={handleChange}
           />
-          {/* NOVO: Campo de seleção para a fonte do cabeçalho */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Fonte do Cabeçalho
@@ -451,12 +477,9 @@ export const ThemeCustomizer: React.FC = () => {
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
             >
-              <option value="Inter">Inter</option>
-              <option value="Roboto">Roboto</option>
-              <option value="Open Sans">Open Sans</option>
-              <option value="Lato">Lato</option>
-              <option value="Montserrat">Montserrat</option>
-              <option value="Poppins">Poppins</option>
+              {availableFonts.map(font => (
+                <option key={font} value={font}>{font}</option>
+              ))}
             </select>
             <p className="text-xs text-gray-500 mt-1">
               Fonte usada no cabeçalho e em títulos
