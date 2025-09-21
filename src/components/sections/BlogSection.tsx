@@ -135,7 +135,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateHome }) => {
                   <span className="hidden sm:inline">Voltar</span>
                 </Button>
                 <div className="min-w-0 flex-1">
-                  <h1 className="text-2xl sm:text-3xl font-bold">Blog da Catedral</h1>
+                  <h1 className="text-2xl sm:text-3xl font-bold">Mensagem de Fé</h1>
                   <p className="text-sm sm:text-base truncate" style={{ color: 'var(--color-accent-2)' }}>
                     Acompanhe as novidades e reflexões da nossa comunidade
                   </p>

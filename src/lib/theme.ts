@@ -50,7 +50,7 @@ export const getThemeSettings = async (): Promise<ThemeSettings> => {
   }
 
   try {
-    const settingKeys = Object.keys(defaultTheme);
+    const settingKeys = Object.keys(defaultTheme) as Array<keyof ThemeSettings>;
     const { data, error } = await supabase
       .from('system_settings')
       .select('key, value')
@@ -61,9 +61,9 @@ export const getThemeSettings = async (): Promise<ThemeSettings> => {
     const fetchedSettings: Partial<ThemeSettings> = {};
     data?.forEach(setting => {
       if (setting.key === 'site_use_primary_gradient' || setting.key === 'site_use_secondary_gradient') {
-        fetchedSettings[setting.key] = setting.value === 'true';
+        fetchedSettings[setting.key as keyof ThemeSettings] = setting.value === 'true';
       } else {
-        fetchedSettings[setting.key as keyof ThemeSettings] = setting.value;
+        fetchedSettings[setting.key as keyof ThemeSettings] = setting.value as any;
       }
     });
 
@@ -95,6 +95,7 @@ export const applyThemeToDocument = (theme: ThemeSettings) => {
   root.style.setProperty('--color-accent-2', theme.site_accent_color_2);
   root.style.setProperty('--color-button-text', theme.site_button_text_color);
   root.style.setProperty('--color-header-text', theme.site_header_text_color);
+  root.style.setProperty('--site-header-font-family', `'${theme.site_header_font_family}', system-ui, -apple-system, sans-serif`);
   root.style.setProperty('--site-header-font-family', `'${theme.site_header_font_family}', system-ui, -apple-system, sans-serif`);
 };
 

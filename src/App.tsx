@@ -38,237 +38,239 @@ import { Button } from './components/ui/Button';
 import { supabase } from './lib/supabase';
 import { getThemeSettings, applyThemeToDocument } from './lib/theme';
 
-type CurrentView = 
-  | 'home' 
-  | 'history' 
-  | 'priests' 
-  | 'photos' 
-  | 'albums' 
-  | 'full-gallery' 
-  | 'timeline' 
-  | 'blog' 
-  | 'announcements' 
-  | 'contact' 
-  | 'pastorals' 
-  | 'celebrations'
-  | 'privacy-policy' 
-  | 'terms-of-use';
+type CurrentView =
+  | 'home'
+  | 'history'
+  | 'priests'
+  | 'photos'
+  | 'albums'
+  | 'full-gallery'
+  | 'timeline'
+  | 'blog'
+  | 'announcements'
+  | 'contact'
+  | 'pastorals'
+  | 'celebrations'
+  | 'privacy-policy'
+  | 'terms-of-use';
 
 function App() {
-  const [currentView, setCurrentView] = useState<CurrentView>('home');
-  const [showAdmin, setShowAdmin] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [parish, setParish] = useState<any>(null);
+  const [currentView, setCurrentView] = useState<CurrentView>('home');
+  const [showAdmin, setShowAdmin] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [parish, setParish] = useState<any>(null);
 
-  useEffect(() => {
-    // Load parish data for header logo
-    const loadParishData = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('parishes')
-          .select('*')
-          .limit(1)
-          .single();
+  // Hooks devem ser declarados no topo, antes do return e de qualquer lógica condicional de renderização
+  useEffect(() => {
+    // Load parish data for header logo
+    const loadParishData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('parishes')
+          .select('*')
+          .limit(1)
+          .single();
 
-        if (data) {
-          setParish(data);
-        }
-      } catch (error) {
-        console.error('Error loading parish data:', error);
-      }
-    };
+        if (data) {
+          setParish(data);
+        }
+      } catch (error) {
+        console.error('Error loading parish data:', error);
+      }
+    };
 
-    loadParishData();
+    // Load theme settings
+    const loadTheme = async () => {
+      try {
+        const themeSettings = await getThemeSettings();
+        applyThemeToDocument(themeSettings);
+      } catch (error) {
+        console.error('Error loading theme:', error);
+      }
+    };
 
-    // Load theme settings
-    const loadTheme = async () => {
-      try {
-        const themeSettings = await getThemeSettings();
-        applyThemeToDocument(themeSettings);
-      } catch (error) {
-        console.error('Error loading theme:', error);
-      }
-    };
-
-    loadTheme();
-
-    // Check authentication
-    const checkAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setIsAuthenticated(!!session);
-      } catch (error) {
-        console.error('Error checking auth:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleNavigate = (section: string) => {
-    setCurrentView(section as CurrentView);
+    // Check authentication
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setIsAuthenticated(!!session);
+      } catch (error) {
+        console.error('Error checking auth:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    // Scroll to top when navigating
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+    // Call the functions
+    loadParishData();
+    loadTheme();
+    checkAuth();
 
-  const handleAdminClick = () => {
-    if (isAuthenticated) {
-      setShowAdmin(true);
-    } else {
-      setShowLogin(true);
-    }
-  };
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+    });
 
-  const handleLogin = () => {
-    setShowLogin(false);
-    setIsAuthenticated(true);
-    setShowAdmin(true);
-  };
+    return () => subscription.unsubscribe();
+  }, []); // Empty dependency array means it runs once on mount
 
-  const handleAdminClose = () => {
-    setShowAdmin(false);
-  };
+  // NOVO useEffect para lidar com a URL de administração
+  useEffect(() => {
+    const checkAdminAccess = () => {
+      const hash = window.location.hash;
+      if (hash === '#admin' || hash === '#painel' || hash === '#administracao') {
+        if (isAuthenticated) {
+          setShowAdmin(true);
+        } else {
+          setShowLogin(true);
+        }
+        // Limpar o hash da URL
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    };
+    
+    checkAdminAccess();
+    
+    // Escutar mudanças no hash
+    window.addEventListener('hashchange', checkAdminAccess);
+    return () => window.removeEventListener('hashchange', checkAdminAccess);
+  }, [isAuthenticated]); // Executa novamente quando o estado de autenticação muda
 
-  const renderCurrentView = () => {
-    switch (currentView) {
-      case 'home':
-        return (
-          <>
-            <SlidesSection />
-            <HeroSection onNavigate={handleNavigate} />
-            <HistorySection />
-            <PriestSection />
-            <PhotoGallery onNavigateToFullGallery={() => setCurrentView('albums')} />
-            <TimelineSection />
-            <BlogSection />
-            <AnnouncementsSection />
-            <ContactSection onNavigate={handleNavigate} />
-          </>
-        );
-      case 'history':
-        return <HistorySection onBack={() => setCurrentView('home')} />;
-      case 'priests':
-        return <PriestSection />;
-      case 'photos':
-        return <FullGallery onBack={() => setCurrentView('home')} />;
-      case 'albums':
-        return <AlbumGallery onBack={() => setCurrentView('home')} />;
-      case 'full-gallery':
-        return <FullGallery onBack={() => setCurrentView('home')} />;
-      case 'timeline':
-        return <TimelineSection />;
-      case 'blog':
-        return <BlogSection onNavigateHome={() => setCurrentView('home')} />;
-      case 'announcements':
-        return <AnnouncementsSection />;
-      case 'contact':
-        return <ContactSection onNavigate={handleNavigate} />;
-      case 'pastorals':
-        return <PastoralsPage onBack={() => setCurrentView('home')} />;
-      case 'celebrations':
-        return <CelebrationsPage onBack={() => setCurrentView('home')} />;
-      case 'privacy-policy':
-        return <PrivacyPolicyPage onBack={() => setCurrentView('home')} />;
-      case 'terms-of-use':
-        return <TermsOfUsePage onBack={() => setCurrentView('home')} />;
-      default:
-        return (
-          <>
-            <SlidesSection />
-            <HeroSection onNavigate={handleNavigate} />
-            <HistorySection />
-            <PriestSection />
-            <PhotoGallery onNavigateToFullGallery={() => setCurrentView('albums')} />
-            <TimelineSection />
-            <BlogSection />
-            <AnnouncementsSection />
-            <ContactSection onNavigate={handleNavigate} />
-          </>
-        );
-    }
-  };
+  const handleNavigate = (section: string) => {
+    setCurrentView(section as CurrentView);
+    
+    // Scroll to top when navigating
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-red-900 to-red-800 flex items-center justify-center">
-        <div className="text-center text-white">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-lg">Carregando...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleAdminClick = () => {
+    if (isAuthenticated) {
+      setShowAdmin(true);
+    } else {
+      setShowLogin(true);
+    }
+  };
 
-  return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
-      <Toaster 
-        position="top-right"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-          },
-        }}
-      />
+  const handleLogin = () => {
+    setShowLogin(false);
+    setIsAuthenticated(true);
+    setShowAdmin(true);
+  };
 
-      {/* Header - only show on home view */}
-      {currentView === 'home' && <Header onNavigate={handleNavigate} parish={parish} />}
+  const handleAdminClose = () => {
+    setShowAdmin(false);
+  };
 
-      {/* Main Content */}
-      <main className="relative">
-        {renderCurrentView()}
-      </main>
+  const renderCurrentView = () => {
+    switch (currentView) {
+      case 'home':
+        return (
+          <>
+            <SlidesSection />
+            <HeroSection onNavigate={handleNavigate} />
+            <HistorySection />
+            <PriestSection />
+            <PhotoGallery onNavigateToFullGallery={() => setCurrentView('albums')} />
+            <TimelineSection />
+            <BlogSection />
+            <AnnouncementsSection />
+            <ContactSection onNavigate={handleNavigate} />
+          </>
+        );
+      case 'history':
+        return <HistorySection onBack={() => setCurrentView('home')} />;
+      case 'priests':
+        return <PriestSection />;
+      case 'photos':
+        return <FullGallery onBack={() => setCurrentView('home')} />;
+      case 'albums':
+        return <AlbumGallery onBack={() => setCurrentView('home')} />;
+      case 'full-gallery':
+        return <FullGallery onBack={() => setCurrentView('home')} />;
+      case 'timeline':
+        return <TimelineSection />;
+      case 'blog':
+        return <BlogSection onNavigateHome={() => setCurrentView('home')} />;
+      case 'announcements':
+        return <AnnouncementsSection />;
+      case 'contact':
+        return <ContactSection onNavigate={handleNavigate} />;
+      case 'pastorals':
+        return <PastoralsPage onBack={() => setCurrentView('home')} />;
+      case 'celebrations':
+        return <CelebrationsPage onBack={() => setCurrentView('home')} />;
+      case 'privacy-policy':
+        return <PrivacyPolicyPage onBack={() => setCurrentView('home')} />;
+      case 'terms-of-use':
+        return <TermsOfUsePage onBack={() => setCurrentView('home')} />;
+      default:
+        return (
+          <>
+            <SlidesSection />
+            <HeroSection onNavigate={handleNavigate} />
+            <HistorySection />
+            <PriestSection />
+            <PhotoGallery onNavigateToFullGallery={() => setCurrentView('albums')} />
+            <TimelineSection />
+            <BlogSection />
+            <AnnouncementsSection />
+            <ContactSection onNavigate={handleNavigate} />
+          </>
+        );
+    }
+  };
 
-      {/* Admin Button - only show on home view */}
-      {currentView === 'home' && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1, duration: 0.5 }}
-          className="fixed bottom-8 left-4 z-40"
-        >
-          <Button
-            onClick={handleAdminClick}
-            variant="outline"
-            size="sm"
-            className="rounded-full w-12 h-12 p-0 shadow-lg hover:shadow-xl transition-all duration-200 bg-white/90 backdrop-blur-sm border-gray-300 text-gray-700 hover:text-red-800 hover:border-red-300"
-            title="Painel Administrativo"
-          >
-            <Settings className="h-5 w-5" />
-          </Button>
-        </motion.div>
-      )}
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-900 to-red-800 flex items-center justify-center">
+        <div className="text-center text-white">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-lg">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
-      {/* Scroll to Top Button */}
-      <ScrollToTopButton />
+  return (
+    <div className="min-h-screen bg-white overflow-x-hidden">
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+        }}
+      />
 
-      {/* Urgent Popup */}
-      <UrgentPopup />
+      {/* Header - only show on home view */}
+      {currentView === 'home' && <Header onNavigate={handleNavigate} parish={parish} />}
 
-      {/* Admin Panel */}
-      <AnimatePresence>
-        {showAdmin && <AdminPanel onClose={handleAdminClose} />}
-      </AnimatePresence>
+      {/* Main Content */}
+      <main className="relative">
+        {renderCurrentView()}
+      </main>
 
-      {/* Login Form */}
-      <AnimatePresence>
-        {showLogin && <LoginForm onLogin={handleLogin} />}
-      </AnimatePresence>
-    </div>
-  );
+      {/* Scroll to Top Button */}
+      <ScrollToTopButton />
+
+      {/* Urgent Popup */}
+      <UrgentPopup />
+
+      {/* Admin Panel */}
+      <AnimatePresence>
+        {showAdmin && <AdminPanel onClose={handleAdminClose} />}
+      </AnimatePresence>
+
+      {/* Login Form */}
+      <AnimatePresence>
+        {showLogin && <LoginForm onLogin={handleLogin} />}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 export default App;

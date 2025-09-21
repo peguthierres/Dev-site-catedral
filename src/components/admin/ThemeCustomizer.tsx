@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Palette, RefreshCw, Eye, RotateCcw, Paintbrush, Type, Square, Contact as Font } from 'lucide-react';
+import { Save, Palette, RefreshCw, Eye, RotateCcw, Paintbrush, Type, Square } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { supabase } from '../../lib/supabase';
@@ -48,7 +48,7 @@ const ColorInput: React.FC<{
   name: keyof ThemeSettings;
   value: string;
   description?: string;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
 }> = ({ label, name, value, description, handleChange }) => (
   <div>
     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -98,6 +98,7 @@ export const ThemeCustomizer: React.FC = () => {
     'site_accent_color_2',
     'site_button_text_color',
     'site_header_text_color',
+    'site_header_font_family', // A fonte do cabeçalho também será buscada
   ];
 
   useEffect(() => {
@@ -161,10 +162,13 @@ export const ThemeCustomizer: React.FC = () => {
     // Aplicar cores de destaque
     root.style.setProperty('--color-accent-1', themeSettings.site_accent_color_1);
     root.style.setProperty('--color-accent-2', themeSettings.site_accent_color_2);
+    
+    // NOVO: Aplicar a fonte do cabeçalho
+    root.style.setProperty('--site-header-font-family', themeSettings.site_header_font_family);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type, checked } = e.target as HTMLInputElement;
     const newSettings = {
       ...settings,
       [name]: type === 'checkbox' ? checked : value,
@@ -179,23 +183,23 @@ export const ThemeCustomizer: React.FC = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Save each setting individually using upsert with proper conflict resolution
-      for (const [key, value] of Object.entries(settings)) {
-        const settingValue = typeof value === 'boolean' ? value.toString() : value;
-        
-        const { error } = await supabase
-          .from('system_settings')
-          .upsert([{
-            key,
-            value: settingValue,
-            description: `Theme setting: ${key}`,
-            is_encrypted: false,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }], { onConflict: 'key' });
+      const updates = Object.entries(settings).map(([key, value]) => {
+        const settingValue = typeof value === 'boolean' ? String(value) : value;
+        return {
+          key,
+          value: settingValue,
+          description: `Theme setting: ${key}`,
+          is_encrypted: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+      });
 
-        if (error) throw error;
-      }
+      const { error } = await supabase
+        .from('system_settings')
+        .upsert(updates, { onConflict: 'key' });
+
+      if (error) throw error;
 
       toast.success('Tema personalizado salvo com sucesso!');
     } catch (error) {
@@ -401,11 +405,11 @@ export const ThemeCustomizer: React.FC = () => {
         </div>
       </Card>
 
-      {/* Cores de Texto */}
+      {/* Cores de Texto e Fontes */}
       <Card className="p-6">
         <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
           <Type className="h-5 w-5 text-gray-600" />
-          Cores de Texto
+          Cores de Texto e Fontes
         </h4>
         <div className="grid md:grid-cols-2 gap-6">
           <ColorInput
@@ -436,6 +440,28 @@ export const ThemeCustomizer: React.FC = () => {
             description="Cor do texto no cabeçalho do site"
             handleChange={handleChange}
           />
+          {/* NOVO: Campo de seleção para a fonte do cabeçalho */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Fonte do Cabeçalho
+            </label>
+            <select
+              name="site_header_font_family"
+              value={settings.site_header_font_family}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <option value="Inter">Inter</option>
+              <option value="Roboto">Roboto</option>
+              <option value="Open Sans">Open Sans</option>
+              <option value="Lato">Lato</option>
+              <option value="Montserrat">Montserrat</option>
+              <option value="Poppins">Poppins</option>
+            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              Fonte usada no cabeçalho e em títulos
+            </p>
+          </div>
         </div>
       </Card>
 
@@ -498,7 +524,8 @@ export const ThemeCustomizer: React.FC = () => {
               background: settings.site_use_primary_gradient
                 ? `linear-gradient(to right, ${settings.site_primary_color_from}, ${settings.site_primary_color_to})`
                 : settings.site_primary_color_from,
-              color: settings.site_header_text_color
+              color: settings.site_header_text_color,
+              fontFamily: settings.site_header_font_family,
             }}
           >
             <h5 className="font-bold">Exemplo de Cabeçalho</h5>

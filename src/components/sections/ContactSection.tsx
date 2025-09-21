@@ -688,6 +688,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate }) =>
               )}
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-gray-600 mt-4">
+              <span>Desenvolvido por: <a href="https://instagram.com/guthierresc" target="_blank" rel="noopener noreferrer" className="hover:text-red-800 transition-colors font-medium">Sem. Guthierres</a></span>
+              <span className="hidden sm:inline">•</span>
               <button
                 onClick={() => onNavigate('privacy-policy')}
                 className="hover:text-red-800 transition-colors underline"

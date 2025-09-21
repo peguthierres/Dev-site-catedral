@@ -127,18 +127,6 @@ export const AnnouncementManager: React.FC = () => {
     return type === 'event' ? Calendar : Bell;
   };
 
-  // Nova função para formatar a data e hora para o input datetime-local
-  const formatDateTimeForInput = (dateString: string | null) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
