@@ -101,7 +101,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
       },
       { 
         threshold: 0.1,
-        rootMargin: priority ? '0px' : '50px' // REDUZIDO de 100px para 50px
+        rootMargin: priority ? '0px' : '0px' // Sem margem - carrega apenas quando visível
       }
     );
 

@@ -104,15 +104,15 @@ export const getCloudinaryUrl = (
   
   // OTIMIZAÇÕES EXTREMAS PARA REDUZIR BANDWIDTH
   transformations.push('f_auto'); // WebP/AVIF quando possível
-  transformations.push(`q_${quality}`); // Qualidade muito baixa mas aceitável
+  transformations.push(`q_${quality}`); // Qualidade extremamente baixa
   transformations.push('fl_progressive'); // Progressive JPEG
   transformations.push('fl_lossy'); // Compressão lossy agressiva
   transformations.push('fl_strip_profile'); // Remove metadados
   transformations.push('dpr_auto'); // DPR automático
   
   // LIMITAR TAMANHOS MÁXIMOS DRASTICAMENTE
-  const maxWidth = Math.min(width || 800, 800); // Máximo 800px
-  const maxHeight = Math.min(height || 600, 600); // Máximo 600px
+  const maxWidth = Math.min(width || 600, 600); // Máximo 600px (reduzido de 800px)
+  const maxHeight = Math.min(height || 450, 450); // Máximo 450px (reduzido de 600px)
   
   if (width || height) {
     let sizeTransform = `c_${crop}`;
@@ -122,7 +122,7 @@ export const getCloudinaryUrl = (
     transformations.push(sizeTransform);
   } else {
     // Se não especificado, limitar a 400px para economizar
-    transformations.push(`c_limit,w_400,h_400`);
+    transformations.push(`c_limit,w_300,h_300`); // Reduzido de 400px para 300px
   }
 
   const transformString = transformations.join(',');
@@ -282,12 +282,12 @@ export const getOptimizedImageUrl = (
   publicId: string,
   type: 'thumbnail' | 'medium' | 'large' | 'hero' = 'medium'
 ): string => {
-  // Configurações MUITO mais agressivas para reduzir bandwidth
+  // Configurações EXTREMAMENTE agressivas para reduzir bandwidth
   const configs = {
-    thumbnail: { width: 80, height: 80, quality: 30, progressive: true }, // Reduzido de 120x120
-    medium: { width: 200, height: 200, quality: 35, progressive: true }, // Reduzido de 320x320
-    large: { width: 400, height: 300, quality: 40, progressive: true }, // Reduzido de 640x480
-    hero: { width: 800, height: 450, quality: 45, progressive: true } // Reduzido de 1280x720
+    thumbnail: { width: 60, height: 60, quality: 20, progressive: true }, // Reduzido ainda mais
+    medium: { width: 150, height: 150, quality: 25, progressive: true }, // Reduzido ainda mais
+    large: { width: 300, height: 225, quality: 30, progressive: true }, // Reduzido ainda mais
+    hero: { width: 600, height: 338, quality: 35, progressive: true } // Reduzido ainda mais
   };
 
   return getCloudinaryUrl(publicId, configs[type]);
@@ -316,14 +316,14 @@ export const getCachedCloudinaryUrl = (
 
 // Função para gerar URLs responsivas com srcset OTIMIZADO
 export const getResponsiveImageUrls = (publicId: string, baseWidth: number = 200) => {
-  // REDUZIDO: baseWidth padrão de 400 para 200
+  // REDUZIDO: baseWidth padrão ainda menor
   const sizes = [1, 1.5]; // REDUZIDO: apenas 2 tamanhos em vez de 4
   const urls = sizes.map(multiplier => {
-    const width = Math.min(Math.round(baseWidth * multiplier), 600); // Máximo 600px
+    const width = Math.min(Math.round(baseWidth * multiplier), 400); // Máximo 400px (reduzido de 600px)
     return {
       url: getCachedCloudinaryUrl(publicId, {
         width,
-        quality: 35, // Qualidade muito baixa
+        quality: 25, // Qualidade extremamente baixa
         format: 'auto',
         progressive: true,
         crop: 'fill'
@@ -339,11 +339,11 @@ export const getResponsiveImageUrls = (publicId: string, baseWidth: number = 200
 };
 
 // NOVA FUNÇÃO: Gerar URL ultra-comprimida para thumbnails
-export const getUltraCompressedUrl = (publicId: string, size: number = 100): string => {
+export const getUltraCompressedUrl = (publicId: string, size: number = 80): string => {
   return getCloudinaryUrl(publicId, {
     width: size,
     height: size,
-    quality: 25, // Qualidade muito baixa
+    quality: 15, // Qualidade extremamente baixa
     format: 'auto',
     crop: 'fill',
     progressive: true
@@ -362,13 +362,13 @@ export const getDeviceOptimizedUrl = (
   const isMobile = window.innerWidth < 768;
   
   // Ajustar qualidade baseado no dispositivo/conexão
-  let quality = 40;
-  if (isSlowConnection) quality = 25;
-  else if (isMobile) quality = 30;
+  let quality = 30; // Reduzido de 40 para 30
+  if (isSlowConnection) quality = 15; // Reduzido de 25 para 15
+  else if (isMobile) quality = 20; // Reduzido de 30 para 20
   
   // Limitar tamanhos para mobile
-  const maxWidth = isMobile ? Math.min(width || 300, 300) : Math.min(width || 600, 600);
-  const maxHeight = isMobile ? Math.min(height || 300, 300) : Math.min(height || 600, 600);
+  const maxWidth = isMobile ? Math.min(width || 250, 250) : Math.min(width || 500, 500);
+  const maxHeight = isMobile ? Math.min(height || 250, 250) : Math.min(height || 500, 500);
   
   return getCloudinaryUrl(publicId, {
     width: maxWidth,

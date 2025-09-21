@@ -38,7 +38,7 @@ export const LazyImage: React.FC<LazyImageProps> = ({
         },
         { 
           threshold: 0.1,
-          rootMargin: '20px' // Margem muito reduzida
+          rootMargin: '0px' // Sem margem - carrega apenas quando visível
         }
       );
 

@@ -196,7 +196,7 @@ function App() {
       case 'announcements':
         return <AnnouncementsSection />;
       case 'contact':
-        return <ContactSection onNavigate={handleNavigate} />;
+        return <ContactSection onNavigate={handleNavigate} isFullPage={true} />;
       case 'pastorals':
         return <PastoralsPage onBack={() => setCurrentView('home')} />;
       case 'celebrations':

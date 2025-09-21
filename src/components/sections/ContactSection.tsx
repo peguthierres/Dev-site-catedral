@@ -1,42 +1,22 @@
+// src/components/sections/ContactSection.tsx
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Phone, Mail, Clock, MessageCircle, Send, User, MessageSquare, Calendar, Heart, ExternalLink, Users, ArrowLeft } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, MessageCircle, Send, User, MessageSquare, Calendar, Heart, ExternalLink, Users } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { supabase, Parish, Schedule } from '../../lib/supabase';
+import { ArrowLeft, Church } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface ContactSectionProps {
   onNavigate: (section: string) => void;
+  isFullPage?: boolean;
 }
 
-const PageHeader: React.FC<{ title: string; subtitle: string; onBack: () => void }> = ({ title, subtitle, onBack }) => (
-  <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white shadow-lg sticky top-0 z-50 safe-area-inset-top">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-          <Button
-            variant="outline"
-            onClick={onBack}
-            className="bg-white/20 border-white/30 text-white hover:bg-white/30 flex items-center gap-1 sm:gap-2 flex-shrink-0"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Voltar</span>
-          </Button>
-          <div className="min-w-0 flex-1">
-            <h1 className="text-2xl sm:text-3xl font-bold">{title}</h1>
-            <p className="text-blue-200 text-sm sm:text-base truncate">
-              {subtitle}
-            </p>
-          </div>
-        </div>
-        <Mail className="h-8 w-8 sm:h-12 sm:w-12 text-blue-400 flex-shrink-0" />
-      </div>
-    </div>
-  </div>
-);
+// O componente PageHeader foi removido daqui
+// para ser gerenciado no componente principal App.tsx.
 
-export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate }) => {
+export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate, isFullPage = false }) => {
   const [parish, setParish] = useState<Parish | null>(null);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -215,7 +195,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate }) =>
   const handleMapClick = () => {
     if (parish?.address) {
       const encodedAddress = encodeURIComponent(parish.address);
-      window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
+      window.open(`https://maps.google.com/?q=${encodedAddress}`, '_blank');
     }
   };
 
@@ -253,31 +233,35 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate }) =>
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white shadow-lg sticky top-0 z-50 safe-area-inset-top">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-              <Button
-                variant="outline"
-                onClick={() => onNavigate('home')}
-                className="bg-white/20 border-white/30 text-white hover:bg-white/30 flex items-center gap-1 sm:gap-2 flex-shrink-0"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Voltar</span>
-              </Button>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold">Entre em Contato</h1>
-                <p className="text-blue-200 text-sm sm:text-base truncate">
-                  Mande-nos uma mensagem ou encontre-nos
-                </p>
+      
+      {/* Header - apenas quando acessada como página individual */}
+      {isFullPage && (
+        <div className="text-white shadow-lg sticky top-0 z-50 safe-area-inset-top" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))' }}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                <Button
+                  variant="outline"
+                  onClick={() => onNavigate('home')}
+                  className="bg-white/20 border-white/30 text-white hover:bg-white/30 flex items-center gap-1 sm:gap-2 flex-shrink-0"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline">Voltar</span>
+                </Button>
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-2xl sm:text-3xl font-bold">Entre em Contato</h1>
+                  <p className="text-sm sm:text-base truncate" style={{ color: 'var(--color-accent-2)' }}>
+                    Fale conosco e tire suas dúvidas
+                  </p>
+                </div>
               </div>
+              <Church className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" style={{ color: 'var(--color-accent-2)' }} />
             </div>
-            <Mail className="h-8 w-8 sm:h-12 sm:w-12 text-blue-400 flex-shrink-0" />
           </div>
         </div>
-      </div>
+      )}
       
-      <section id="contact" className="py-8 lg:py-20 bg-gradient-to-b from-gray-50 to-white">
+      <section id="contact" className={`${isFullPage ? 'py-20' : 'py-8 lg:py-20'} bg-gradient-to-b from-gray-50 to-white`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Informações de Contato e Horários */}
@@ -699,7 +683,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate }) =>
                 )}
               </div>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-gray-600 mt-4">
-                {/* INÍCIO DA MUDANÇA */}
                 <span>© 2025 Catedral de São Miguel Arcanjo</span>
                 <span className="hidden sm:inline">•</span>
                 <button
@@ -717,7 +700,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate }) =>
                 </button>
                 <span className="hidden sm:inline">•</span>
                 <span>Desenvolvido por: <a href="https://instagram.com/guthierresc" target="_blank" rel="noopener noreferrer" className="hover:text-red-800 transition-colors font-medium">Sem. Guthierres</a></span>
-                {/* FIM DA MUDANÇA */}
               </div>
             </Card>
           </motion.div>
