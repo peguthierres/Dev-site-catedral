@@ -61,7 +61,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate }) =>
           history: '',
           founded_year: 1622,
           address: 'Praça Pe. Aleixo Monteiro Mafra, 11 - São Miguel Paulista, São Paulo - SP, 08010-000',
-          phone: '(11) 99999-9999',
+          phone: '(11) 2032-4160',
           email: 'contato@catedralsaomiguel.com.br',
           logo_url: null,
           cloudinary_public_id: null,
