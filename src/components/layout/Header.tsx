@@ -46,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, parish }) => {
       color: 'var(--color-header-text)'
     }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 sm:h-16 w-full">
+        <div className="flex items-center justify-between h-16 sm:h-16 w-full">
           <motion.div 
             className="flex items-center gap-2 sm:gap-3 cursor-pointer"
             onClick={() => handleNavigate('home')}
@@ -78,7 +78,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, parish }) => {
               }}>São Miguel Paulista</p>
             </div>
             <div className="block sm:hidden">
-              <h1 className="font-bold text-sm" style={{ 
+              <h1 className="font-bold text-base" style={{ 
                 color: 'var(--color-header-text)',
                 fontFamily: 'var(--site-header-font-family)',
               }}>Catedral São Miguel</h1>

@@ -691,5 +691,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate }) =>
 </motion.div>
       </div>
     </section>
+    </div>
   );
 };
