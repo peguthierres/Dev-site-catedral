@@ -83,26 +83,30 @@ export const BlogManager: React.FC = () => {
 
       if (isCreating) {
         // Para novos posts, inclua created_at explicitamente
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('blog_posts')
-          .insert([{
-            ...postData,
-            created_at: new Date().toISOString() // Data atual explícita
-          }]);
+          .insert([{ ...postData, created_at: new Date().toISOString() }])
+          .select()
+          .single();
 
         if (error) throw error;
+        // Atualiza o estado local com o novo post
+        setPosts(prev => [data, ...prev]);
       } else {
         // Para posts existentes, apenas atualizar
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('blog_posts')
           .update(postData)
-          .eq('id', editingPost.id);
+          .eq('id', editingPost.id)
+          .select()
+          .single();
 
         if (error) throw error;
+        // Atualiza o estado local com o post editado
+        setPosts(prev => prev.map(p =>
+          p.id === editingPost.id ? { ...p, ...postData } : p
+        ));
       }
-
-      // Recarregar lista após salvar
-      await fetchBlogPosts();
       
       setEditingPost(null);
       setIsCreating(false);
@@ -124,8 +128,8 @@ export const BlogManager: React.FC = () => {
 
       if (error) throw error;
 
-      // Recarregar lista após exclusão para garantir sincronização
-      await fetchBlogPosts();
+      // ATUALIZA O ESTADO LOCAL: Remove o post da lista imediatamente
+      setPosts(prev => prev.filter(p => p.id !== post.id));
       
       toast.success('Post excluído com sucesso!');
     } catch (error) {
@@ -146,8 +150,10 @@ export const BlogManager: React.FC = () => {
 
       if (error) throw error;
 
-      // Recarregar lista após alteração
-      await fetchBlogPosts();
+      // ATUALIZA O ESTADO LOCAL: Altera o status do post na lista
+      setPosts(prev => prev.map(p =>
+        p.id === post.id ? { ...p, is_published: !p.is_published } : p
+      ));
       
       toast.success('Status atualizado!');
     } catch (error) {
