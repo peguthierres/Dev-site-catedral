@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Folder, Image as ImageIcon, ZoomIn, ZoomOut, RotateCcw, X, Eye } from 'lucide-react';
+import { ArrowLeft, Folder, Image as ImageIcon, ZoomIn, ZoomOut, RotateCcw, X, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
+import { OptimizedImage } from '../ui/OptimizedImage';
 import { supabase, PhotoAlbum, Photo } from '../../lib/supabase';
 
 interface AlbumGalleryProps {
@@ -15,6 +16,7 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
   const [albumPhotos, setAlbumPhotos] = useState<Photo[]>([]);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingPhotos, setIsLoadingPhotos] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
@@ -23,18 +25,6 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
 
   useEffect(() => {
     fetchAlbums();
-  }, []);
-
-  // Refresh albums when component becomes visible
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        fetchAlbums();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
   const fetchAlbums = async () => {
@@ -55,8 +45,8 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
         const defaultAlbums: PhotoAlbum[] = [
           {
             id: '1',
-            name: '40 Anos de História',
-            description: 'Fotos históricas da paróquia desde sua fundação até os dias atuais',
+            name: 'História da Catedral',
+            description: 'Fotos históricas da catedral ao longo dos séculos',
             cover_image_url: 'https://images.pexels.com/photos/6608313/pexels-photo-6608313.jpeg',
             cloudinary_public_id: null,
             is_active: true,
@@ -67,7 +57,7 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
           {
             id: '2',
             name: 'Celebrações Especiais',
-            description: 'Momentos marcantes das principais celebrações e festividades',
+            description: 'Momentos marcantes das principais celebrações catedralicias',
             cover_image_url: 'https://images.pexels.com/photos/8468459/pexels-photo-8468459.jpeg',
             cloudinary_public_id: null,
             is_active: true,
@@ -78,7 +68,7 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
           {
             id: '3',
             name: 'Vida Comunitária',
-            description: 'O dia a dia da nossa comunidade paroquial',
+            description: 'O dia a dia da nossa comunidade catedralicia',
             cover_image_url: 'https://images.pexels.com/photos/7220900/pexels-photo-7220900.jpeg',
             cloudinary_public_id: null,
             is_active: true,
@@ -89,7 +79,7 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
           {
             id: '4',
             name: 'Eventos Especiais',
-            description: 'Festividades e eventos marcantes da paróquia',
+            description: 'Festividades e eventos marcantes da catedral',
             cover_image_url: 'https://images.pexels.com/photos/8468456/pexels-photo-8468456.jpeg',
             cloudinary_public_id: null,
             is_active: true,
@@ -108,6 +98,7 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
   };
 
   const fetchAlbumPhotos = async (albumId: string) => {
+    setIsLoadingPhotos(true);
     try {
       const { data, error } = await supabase
         .from('photos')
@@ -116,18 +107,54 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      if (data) {
+      
+      if (data && data.length > 0) {
         setAlbumPhotos(data);
       } else {
-        setAlbumPhotos([]);
+        // Fotos de exemplo se não houver fotos no álbum
+        const samplePhotos: Photo[] = [
+          {
+            id: `sample-1-${albumId}`,
+            title: 'Foto de Exemplo 1',
+            description: 'Esta é uma foto de exemplo do álbum',
+            image_url: 'https://images.pexels.com/photos/8468459/pexels-photo-8468459.jpeg',
+            cloudinary_public_id: null,
+            category: 'community',
+            album_id: albumId,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: `sample-2-${albumId}`,
+            title: 'Foto de Exemplo 2',
+            description: 'Esta é outra foto de exemplo do álbum',
+            image_url: 'https://images.pexels.com/photos/7220900/pexels-photo-7220900.jpeg',
+            cloudinary_public_id: null,
+            category: 'community',
+            album_id: albumId,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: `sample-3-${albumId}`,
+            title: 'Foto de Exemplo 3',
+            description: 'Mais uma foto de exemplo do álbum',
+            image_url: 'https://images.pexels.com/photos/6608313/pexels-photo-6608313.jpeg',
+            cloudinary_public_id: null,
+            category: 'community',
+            album_id: albumId,
+            created_at: new Date().toISOString()
+          }
+        ];
+        setAlbumPhotos(samplePhotos);
       }
     } catch (error) {
       console.error('Error fetching album photos:', error);
       setAlbumPhotos([]);
+    } finally {
+      setIsLoadingPhotos(false);
     }
   };
 
-  const handleAlbumSelect = async (album: PhotoAlbum) => {
+  const handleAlbumClick = async (album: PhotoAlbum) => {
     setSelectedAlbum(album);
     await fetchAlbumPhotos(album.id);
   };
@@ -172,19 +199,13 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
   const handleMouseDown = (e: React.MouseEvent) => {
     if (zoomLevel > 1) {
       setIsDragging(true);
-      setDragStart({
-        x: e.clientX - imagePosition.x,
-        y: e.clientY - imagePosition.y
-      });
+      setDragStart({ x: e.clientX - imagePosition.x, y: e.clientY - imagePosition.y });
     }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (isDragging && zoomLevel > 1) {
-      setImagePosition({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
-      });
+      setImagePosition({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
     }
   };
 
@@ -201,13 +222,13 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [selectedPhoto, currentPhotoIndex]);
+  }, [selectedPhoto, currentPhotoIndex, albumPhotos]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-800 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 mx-auto mb-4" style={{ borderColor: 'var(--color-primary-from)' }}></div>
           <p className="text-gray-600">Carregando álbuns...</p>
         </div>
       </div>
@@ -215,16 +236,16 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-y-auto pt-14 sm:pt-16">
+    <div className="min-h-screen bg-gray-50 overflow-y-auto">
       {/* Header */}
-      <div className="bg-white shadow-sm fixed top-14 sm:top-16 left-0 right-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="text-white shadow-lg sticky top-0 z-50 safe-area-inset-top" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
               <Button
                 variant="outline"
                 onClick={selectedAlbum ? handleBackToAlbums : onBack}
-                className="flex items-center gap-1 sm:gap-2 flex-shrink-0"
+                className="bg-white/20 border-white/30 text-white hover:bg-white/30 flex items-center gap-1 sm:gap-2 flex-shrink-0"
               >
                 <ArrowLeft className="h-4 w-4" />
                 <span className="hidden sm:inline">
@@ -233,30 +254,26 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
                 <span className="sm:hidden">Voltar</span>
               </Button>
               <div className="min-w-0 flex-1">
-                <h1 className="text-2xl font-bold text-gray-800">
+                <h1 className="text-2xl sm:text-3xl font-bold">
                   {selectedAlbum ? selectedAlbum.name : 'Álbuns de Fotos'}
                 </h1>
-                <p className="text-sm text-gray-600 truncate">
+                <p className="text-sm sm:text-base truncate" style={{ color: 'var(--color-accent-2)' }}>
                   {selectedAlbum 
                     ? `${albumPhotos.length} foto${albumPhotos.length !== 1 ? 's' : ''}`
-                    : `${albums.length} álbum${albums.length !== 1 ? 's' : ''} disponível${albums.length !== 1 ? 'is' : ''}`
+                    : 'Explore nossa galeria organizada por álbuns'
                   }
                 </p>
               </div>
             </div>
+            <ImageIcon className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" style={{ color: 'var(--color-accent-2)' }} />
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 sm:pt-28">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!selectedAlbum ? (
           /* Albums Grid */
           <>
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">Explore Nossos Álbuns</h2>
-              <p className="text-gray-600">Clique em um álbum para ver todas as fotos</p>
-            </div>
-
             {albums.length === 0 ? (
               <Card className="p-12 text-center">
                 <Folder className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -264,7 +281,7 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
                   Nenhum álbum encontrado
                 </h3>
                 <p className="text-gray-500">
-                  Use o painel administrativo para criar álbuns
+                  Use o painel administrativo para criar álbuns de fotos
                 </p>
               </Card>
             ) : (
@@ -277,16 +294,21 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                   >
                     <button
-                      onClick={() => handleAlbumSelect(album)}
-                      className="w-full h-full text-left focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded-xl"
+                      onClick={() => handleAlbumClick(album)}
+                      className="w-full h-full text-left focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-xl"
+                      style={{ '--tw-ring-color': 'var(--color-primary-from)' } as React.CSSProperties}
                     >
                       <Card className="group cursor-pointer overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full">
                         <div className="aspect-video overflow-hidden bg-gray-100 relative">
                           {album.cover_image_url ? (
-                            <img
+                            <OptimizedImage
                               src={album.cover_image_url}
                               alt={album.name}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                              publicId={album.cloudinary_public_id || undefined}
+                              width={400}
+                              height={225}
+                              quality={35}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
@@ -302,7 +324,7 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
                           </div>
                         </div>
                         <div className="p-6">
-                          <h3 className="text-lg font-bold text-gray-800 group-hover:text-red-800 transition-colors mb-2">
+                          <h3 className="text-lg font-bold text-gray-800 mb-2 transition-colors" style={{ '--hover-color': 'var(--color-primary-from)' } as React.CSSProperties}>
                             {album.name}
                           </h3>
                           <p className="text-gray-600 text-sm line-clamp-2 mb-3">
@@ -312,7 +334,7 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
                             <span className="text-xs text-gray-500">
                               Criado em {new Date(album.created_at).toLocaleDateString('pt-BR')}
                             </span>
-                            <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--color-primary-from)' }}></div>
                           </div>
                         </div>
                       </Card>
@@ -323,7 +345,7 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
             )}
           </>
         ) : (
-          /* Album Photos Grid */
+          /* Album Photos View */
           <>
             {selectedAlbum.description && (
               <div className="mb-8 text-center">
@@ -333,7 +355,12 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
               </div>
             )}
 
-            {albumPhotos.length === 0 ? (
+            {isLoadingPhotos ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 mx-auto mb-4" style={{ borderColor: 'var(--color-primary-from)' }}></div>
+                <p className="text-gray-600">Carregando fotos do álbum...</p>
+              </div>
+            ) : albumPhotos.length === 0 ? (
               <Card className="p-12 text-center">
                 <ImageIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-600 mb-2">
@@ -360,20 +387,20 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
                     >
                       <button
                         onClick={() => handlePhotoSelect(photo)}
-                        className="w-full h-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded-xl"
+                        className="w-full h-full focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-xl"
+                        style={{ '--tw-ring-color': 'var(--color-primary-from)' } as React.CSSProperties}
                       >
                         <Card className="cursor-pointer group overflow-hidden hover:shadow-lg transition-all duration-300 h-full">
                           <div className="aspect-square overflow-hidden relative bg-gray-100">
-                            <img
+                            <OptimizedImage
                               src={photo.image_url}
                               alt={photo.title}
+                              publicId={photo.cloudinary_public_id || undefined}
+                              width={200}
+                              height={200}
+                              quality={25}
+                              ultraCompress={true}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              loading="lazy"
-                              style={{ 
-                                maxWidth: '100%',
-                                height: 'auto',
-                                imageRendering: 'auto'
-                              }}
                             />
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                               <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -384,7 +411,7 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
                             </div>
                           </div>
                           <div className="p-2 sm:p-3">
-                            <h3 className="font-medium text-gray-800 text-xs sm:text-sm group-hover:text-red-800 transition-colors line-clamp-1">
+                            <h3 className="font-medium text-gray-800 text-xs sm:text-sm transition-colors line-clamp-1" style={{ '--hover-color': 'var(--color-primary-from)' } as React.CSSProperties}>
                               {photo.title}
                             </h3>
                             <div className="flex items-center justify-between mt-1 sm:mt-2">
@@ -411,128 +438,174 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+              onClick={() => setSelectedPhoto(null)}
             >
-              {/* Navigation Arrows */}
-              {albumPhotos.length > 1 && (
-                <>
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="relative w-full h-full flex items-center justify-center p-4 sm:p-8"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Navigation Arrows */}
+                {albumPhotos.length > 1 && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handlePrevPhoto}
+                      className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-10 h-10 sm:w-12 sm:h-12 p-0"
+                      style={{ 
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        borderColor: 'rgba(255,255,255,0.2)',
+                        color: 'white'
+                      }}
+                    >
+                      <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleNextPhoto}
+                      className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-10 h-10 sm:w-12 sm:h-12 p-0"
+                      style={{ 
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        borderColor: 'rgba(255,255,255,0.2)',
+                        color: 'white'
+                      }}
+                    >
+                      <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
+                    </Button>
+                  </>
+                )}
+
+                {/* Zoom Controls */}
+                <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-20 flex gap-1 sm:gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handlePrevPhoto}
-                    className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-10 h-10 sm:w-12 sm:h-12 p-0"
+                    onClick={handleZoomIn}
+                    className="bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
+                    style={{ 
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      borderColor: 'rgba(255,255,255,0.2)',
+                      color: 'white'
+                    }}
                   >
-                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <ZoomIn className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleNextPhoto}
-                    className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-10 h-10 sm:w-12 sm:h-12 p-0"
+                    onClick={handleZoomOut}
+                    className="bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
+                    style={{ 
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      borderColor: 'rgba(255,255,255,0.2)',
+                      color: 'white'
+                    }}
                   >
-                    <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 rotate-180" />
+                    <ZoomOut className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
-                </>
-              )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleResetZoom}
+                    className="bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
+                    style={{ 
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      borderColor: 'rgba(255,255,255,0.2)',
+                      color: 'white'
+                    }}
+                  >
+                    <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4" />
+                  </Button>
+                </div>
 
-              {/* Zoom Controls */}
-              <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-20 flex gap-1 sm:gap-2">
+                {/* Close Button */}
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleZoomIn}
-                  className="bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
-                >
-                  <ZoomIn className="h-3 w-3 sm:h-4 sm:w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleZoomOut}
-                  className="bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
-                >
-                  <ZoomOut className="h-3 w-3 sm:h-4 sm:w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleResetZoom}
-                  className="bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
-                >
-                  <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4" />
-                </Button>
-              </div>
-
-              {/* Close Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSelectedPhoto(null)}
-                className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
-              >
-                <X className="h-3 w-3 sm:h-4 sm:w-4" />
-              </Button>
-
-              {/* Photo Counter */}
-              <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-20 bg-black/50 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm">
-                {currentPhotoIndex + 1} de {albumPhotos.length}
-              </div>
-
-              {/* Image Container */}
-              <div 
-                className="relative w-full h-full flex items-center justify-center overflow-hidden p-2 sm:p-4"
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-                style={{ cursor: zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
-              >
-                <img
-                  src={selectedPhoto.image_url}
-                  alt={selectedPhoto.title}
-                  className="max-w-none transition-transform duration-200 select-none"
-                  style={{
-                    transform: `scale(${zoomLevel}) translate(${imagePosition.x / zoomLevel}px, ${imagePosition.y / zoomLevel}px)`,
-                    maxHeight: '85vh',
-                    maxWidth: '85vw',
-                    imageRendering: 'auto'
+                  onClick={() => setSelectedPhoto(null)}
+                  className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
+                  style={{ 
+                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    borderColor: 'rgba(255,255,255,0.2)',
+                    color: 'white'
                   }}
-                  draggable={false}
-                />
-              </div>
+                >
+                  <X className="h-3 w-3 sm:h-4 sm:w-4" />
+                </Button>
 
-              {/* Photo Info Overlay */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-3 sm:p-6 text-white">
-                <div className="max-w-4xl mx-auto">
-                  <div className="flex items-start justify-between mb-2 sm:mb-3">
-                    <h3 className="text-lg sm:text-2xl font-bold flex-1">
-                      {selectedPhoto.title}
-                    </h3>
-                    <span className="inline-block px-2 py-1 sm:px-3 text-xs sm:text-sm bg-red-600 rounded-full ml-2 sm:ml-4">
-                      {selectedAlbum?.name}
-                    </span>
-                  </div>
-                  
-                  {selectedPhoto.description && (
-                    <p className="text-gray-200 leading-relaxed mb-2 sm:mb-3 text-sm sm:text-base">
-                      {selectedPhoto.description}
-                    </p>
-                  )}
-                  
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <p className="text-xs sm:text-sm text-gray-400">
-                      Adicionada em: {new Date(selectedPhoto.created_at).toLocaleDateString('pt-BR', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                      })}
-                    </p>
-                    
-                    <p className="text-xs text-gray-500 hidden sm:block">
-                      Use ← → para navegar | ESC para fechar
-                    </p>
+                {/* Photo Counter */}
+                <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-20 bg-black/50 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm">
+                  {currentPhotoIndex + 1} de {albumPhotos.length}
+                </div>
+
+                {/* Image Container */}
+                <div
+                  className="relative w-full h-full flex items-center justify-center overflow-hidden"
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+                  style={{ cursor: zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
+                >
+                  <motion.img
+                    key={selectedPhoto.id}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.8, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    src={selectedPhoto.image_url}
+                    alt={selectedPhoto.title}
+                    className="max-w-full max-h-full object-contain select-none"
+                    style={{
+                      transform: `scale(${zoomLevel}) translate(${imagePosition.x / zoomLevel}px, ${imagePosition.y / zoomLevel}px)`,
+                      maxHeight: '90vh',
+                      maxWidth: '90vw',
+                    }}
+                    draggable={false}
+                  />
+                </div>
+
+                {/* Photo Info Overlay */}
+                <div
+                  className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-3 sm:p-6 text-white"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="max-w-4xl mx-auto">
+                    <div className="flex items-start justify-between mb-2 sm:mb-3">
+                      <h3 className="text-lg sm:text-2xl font-bold flex-1">
+                        {selectedPhoto.title}
+                      </h3>
+                      <span className="inline-block px-2 py-1 sm:px-3 text-xs sm:text-sm rounded-full ml-2 sm:ml-4 text-white" style={{ backgroundColor: 'var(--color-primary-from)' }}>
+                        {selectedAlbum?.name}
+                      </span>
+                    </div>
+
+                    {selectedPhoto.description && (
+                      <p className="text-gray-200 leading-relaxed mb-2 sm:mb-3 text-sm sm:text-base">
+                        {selectedPhoto.description}
+                      </p>
+                    )}
+
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <p className="text-xs sm:text-sm text-gray-400">
+                        Adicionada em: {new Date(selectedPhoto.created_at).toLocaleDateString('pt-BR', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                      </p>
+
+                      <p className="text-xs text-gray-500 hidden sm:block">
+                        Use ← → para navegar | ESC para fechar
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>

@@ -273,9 +273,17 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate, isFu
                     <div>
                       <h4 className="font-semibold mb-1" style={{ color: 'var(--color-text-dark)' }}>Horário de Atendimento</h4>
                       <div className="text-gray-600 space-y-1">
-                        <p>Segunda a Sexta: 9h às 17h</p>
-                        <p>Sábado: 9h às 12h</p>
-                        <p>Domingo: Após as missas</p>
+                        {parish?.business_hours ? (
+                          parish.business_hours.split('\n').map((line, index) => (
+                            <p key={index}>{line}</p>
+                          ))
+                        ) : (
+                          <>
+                            <p>Segunda a Sexta: 9h às 17h</p>
+                            <p>Sábado: 9h às 12h</p>
+                            <p>Domingo: Após as missas</p>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>

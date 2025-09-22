@@ -284,6 +284,22 @@ export const ParishManager: React.FC = () => {
                 Número do WhatsApp (apenas números, sem espaços ou símbolos)
               </p>
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Horários de Atendimento
+              </label>
+              <textarea
+                value={parish.business_hours || ''}
+                onChange={(e) => setParish(prev => ({ ...prev, business_hours: e.target.value }))}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                placeholder="Segunda a Sexta: 9h às 17h&#10;Sábado: 9h às 12h&#10;Domingo: Após as missas"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Digite os horários de atendimento da secretaria paroquial (uma linha por horário)
+              </p>
+            </div>
           </div>
         </Card>
 

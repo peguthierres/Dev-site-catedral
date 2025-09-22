@@ -41,8 +41,6 @@ export const BlogManager: React.FC = () => {
       author: '',
       is_published: false,
       slug: '',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
     };
     setEditingPost(newPost as BlogPost);
     setIsCreating(true);
@@ -75,11 +73,11 @@ export const BlogManager: React.FC = () => {
         featured_image: editingPost.featured_image,
         author: editingPost.author || 'Administrador',
         is_published: editingPost.is_published,
-        updated_at: new Date().toISOString(),
         slug: postSlug, // Adiciona o slug gerado
       };
 
       if (isCreating) {
+        // Para novos posts, não definir created_at - deixar o Supabase definir automaticamente
         const { data, error } = await supabase
           .from('blog_posts')
           .insert([postData])
@@ -89,14 +87,19 @@ export const BlogManager: React.FC = () => {
         if (error) throw error;
         setPosts(prev => [data, ...prev]);
       } else {
+        // Para posts existentes, apenas atualizar campos específicos
+        const updateData = {
+          ...postData,
+          updated_at: new Date().toISOString()
+        };
         const { error } = await supabase
           .from('blog_posts')
-          .update(postData)
+          .update(updateData)
           .eq('id', editingPost.id);
 
         if (error) throw error;
         setPosts(prev => prev.map(p =>
-          p.id === editingPost.id ? { ...editingPost, ...postData } : p
+          p.id === editingPost.id ? { ...editingPost, ...updateData } : p
         ));
       }
 

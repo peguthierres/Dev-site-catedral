@@ -166,6 +166,7 @@ export interface Parish {
   cloudinary_public_id?: string | null;
   cloudinary_public_id_dark?: string | null;
   cloudinary_public_id_light?: string | null;
+  business_hours: string | null;
   created_at: string;
   updated_at: string;
 }
