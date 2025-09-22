@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, MapPin, Phone, Mail, Clock, Send, MessageCircle, Facebook, Instagram, Youtube } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Mail, Clock, MessageCircle, Facebook, Instagram, Youtube } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { supabase, Parish } from '../../lib/supabase';
@@ -14,14 +14,6 @@ interface ContactSectionProps {
 export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate, isFullPage = false }) => {
   const [parish, setParish] = useState<Parish | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetchParishData();
@@ -72,35 +64,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate, isFu
       console.error('Error fetching parish data:', error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.name || !formData.email || !formData.message) {
-      toast.error('Preencha todos os campos obrigatórios');
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      // Simular envio de e-mail
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      toast.success('Mensagem enviada com sucesso! Entraremos em contato em breve.');
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-      });
-    } catch (error) {
-      console.error('Error sending message:', error);
-      toast.error('Erro ao enviar mensagem. Tente novamente.');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -212,11 +175,11 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate, isFu
             </motion.div>
           )}
 
-          <div className="grid lg:grid-cols-2 gap-12">
-            {/* Informações de Contato */}
+          {/* Informações de Contato e Redes Sociais */}
+          <div className="grid lg:grid-cols-1 gap-12">
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: -50 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
@@ -387,113 +350,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate, isFu
               </Card>
             </motion.div>
 
-            {/* Formulário de Contato */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-            >
-              <Card className="p-8 h-full">
-                <h3 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text-dark)' }}>
-                  Envie uma Mensagem
-                </h3>
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text-dark)' }}>
-                        Nome *
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-                        style={{ focusRingColor: 'var(--color-primary-from)' }}
-                        placeholder="Seu nome completo"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text-dark)' }}>
-                        E-mail *
-                      </label>
-                      <input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-                        style={{ focusRingColor: 'var(--color-primary-from)' }}
-                        placeholder="seu@email.com"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text-dark)' }}>
-                        Telefone
-                      </label>
-                      <input
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-                        style={{ focusRingColor: 'var(--color-primary-from)' }}
-                        placeholder="(11) 99999-9999"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text-dark)' }}>
-                        Assunto
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.subject}
-                        onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-                        style={{ focusRingColor: 'var(--color-primary-from)' }}
-                        placeholder="Assunto da mensagem"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text-dark)' }}>
-                      Mensagem *
-                    </label>
-                    <textarea
-                      value={formData.message}
-                      onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
-                      rows={6}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent resize-none"
-                      style={{ focusRingColor: 'var(--color-primary-from)' }}
-                      placeholder="Como podemos ajudá-lo?"
-                      required
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full flex items-center justify-center gap-2"
-                  >
-                    <Send className="h-4 w-4" />
-                    {isSubmitting ? 'Enviando...' : 'Enviar Mensagem'}
-                  </Button>
-                </form>
-
-                <div className="mt-6 p-4 rounded-lg bg-gray-100">
-                  <p className="text-sm text-center text-black">
-                    Sua mensagem é importante para nós. Responderemos o mais breve possível.
-                  </p>
-                </div>
-              </Card>
-            </motion.div>
           </div>
 
           {/* Mapa e Informações Adicionais */}
