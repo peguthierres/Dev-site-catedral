@@ -93,7 +93,7 @@ export const getCloudinaryUrl = (
   const {
     width,
     height,
-    quality = 40, // REDUZIDO DRASTICAMENTE de auto:low para 40
+    quality = 25, // REDUZIDO DRASTICAMENTE para máxima economia
     format = 'auto',
     crop = 'fill',
     gravity = 'center',
@@ -110,9 +110,9 @@ export const getCloudinaryUrl = (
   transformations.push('fl_strip_profile'); // Remove metadados
   transformations.push('dpr_auto'); // DPR automático
   
-  // LIMITAR TAMANHOS MÁXIMOS DRASTICAMENTE
-  const maxWidth = Math.min(width || 600, 600); // Máximo 600px (reduzido de 800px)
-  const maxHeight = Math.min(height || 450, 450); // Máximo 450px (reduzido de 600px)
+  // LIMITAR TAMANHOS MÁXIMOS AINDA MAIS
+  const maxWidth = Math.min(width || 400, 400); // Máximo 400px (reduzido de 600px)
+  const maxHeight = Math.min(height || 300, 300); // Máximo 300px (reduzido de 450px)
   
   if (width || height) {
     let sizeTransform = `c_${crop}`;
@@ -121,8 +121,8 @@ export const getCloudinaryUrl = (
     if (height) sizeTransform += `,h_${maxHeight}`;
     transformations.push(sizeTransform);
   } else {
-    // Se não especificado, limitar a 400px para economizar
-    transformations.push(`c_limit,w_300,h_300`); // Reduzido de 400px para 300px
+    // Se não especificado, limitar ainda mais para economizar
+    transformations.push(`c_limit,w_200,h_200`); // Reduzido de 300px para 200px
   }
 
   const transformString = transformations.join(',');
@@ -282,12 +282,12 @@ export const getOptimizedImageUrl = (
   publicId: string,
   type: 'thumbnail' | 'medium' | 'large' | 'hero' = 'medium'
 ): string => {
-  // Configurações EXTREMAMENTE agressivas para reduzir bandwidth
+  // Configurações ULTRA agressivas para máxima economia
   const configs = {
-    thumbnail: { width: 60, height: 60, quality: 20, progressive: true }, // Reduzido ainda mais
-    medium: { width: 150, height: 150, quality: 25, progressive: true }, // Reduzido ainda mais
-    large: { width: 300, height: 225, quality: 30, progressive: true }, // Reduzido ainda mais
-    hero: { width: 600, height: 338, quality: 35, progressive: true } // Reduzido ainda mais
+    thumbnail: { width: 50, height: 50, quality: 15, progressive: true }, // Ultra reduzido
+    medium: { width: 120, height: 120, quality: 20, progressive: true }, // Ultra reduzido
+    large: { width: 250, height: 180, quality: 25, progressive: true }, // Ultra reduzido
+    hero: { width: 500, height: 280, quality: 30, progressive: true } // Ultra reduzido
   };
 
   return getCloudinaryUrl(publicId, configs[type]);
@@ -362,13 +362,13 @@ export const getDeviceOptimizedUrl = (
   const isMobile = window.innerWidth < 768;
   
   // Ajustar qualidade baseado no dispositivo/conexão
-  let quality = 30; // Reduzido de 40 para 30
-  if (isSlowConnection) quality = 15; // Reduzido de 25 para 15
-  else if (isMobile) quality = 20; // Reduzido de 30 para 20
+  let quality = 25; // Reduzido ainda mais
+  if (isSlowConnection) quality = 10; // Reduzido para 10
+  else if (isMobile) quality = 15; // Reduzido para 15
   
   // Limitar tamanhos para mobile
-  const maxWidth = isMobile ? Math.min(width || 250, 250) : Math.min(width || 500, 500);
-  const maxHeight = isMobile ? Math.min(height || 250, 250) : Math.min(height || 500, 500);
+  const maxWidth = isMobile ? Math.min(width || 200, 200) : Math.min(width || 400, 400);
+  const maxHeight = isMobile ? Math.min(height || 200, 200) : Math.min(height || 400, 400);
   
   return getCloudinaryUrl(publicId, {
     width: maxWidth,

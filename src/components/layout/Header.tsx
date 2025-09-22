@@ -56,16 +56,16 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, parish }) => {
               <img
                 src={parish.logo_url_light}
                 alt="Logo da Catedral"
-                className="h-8 w-8 sm:h-10 sm:w-10 object-contain rounded-md"
+                className="h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-md"
               />
             ) : parish?.logo_url ? (
               <img
                 src={parish.logo_url}
                 alt="Logo da Catedral"
-                className="h-8 w-8 sm:h-10 sm:w-10 object-contain rounded-md"
+                className="h-10 w-10 sm:h-12 sm:w-12 object-contain rounded-md"
               />
             ) : (
-              <Church className="h-6 w-6 sm:h-8 sm:w-8" style={{ color: 'var(--color-accent-2)' }} />
+              <Church className="h-8 w-8 sm:h-10 sm:w-10" style={{ color: 'var(--color-accent-2)' }} />
             )}
             <div className="hidden sm:block">
               <h1 className="font-bold text-sm sm:text-lg" style={{ 

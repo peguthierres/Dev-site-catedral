@@ -263,6 +263,28 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate, isFu
       
       <section id="contact" className={`${isFullPage ? 'py-20' : 'py-8 lg:py-20'} bg-gradient-to-b from-gray-50 to-white`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Título da seção - apenas na página inicial */}
+          {!isFullPage && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent" style={{
+                background: 'linear-gradient(to right, var(--color-primary-from), var(--color-secondary-from))',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text'
+              }}>
+                Entre em Contato
+              </h2>
+              <p className="text-xl max-w-3xl mx-auto" style={{ color: 'var(--color-text-dark)' }}>
+                Fale conosco e tire suas dúvidas
+              </p>
+            </motion.div>
+          )}
+
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Informações de Contato e Horários */}
             <motion.div

@@ -43,7 +43,7 @@ export const LazyImage: React.FC<LazyImageProps> = ({
       );
 
       observer.observe(imgRef.current);
-      return () => observer.disconnect();
+        rootMargin: '-20px' // Margem negativa - carrega apenas quando bem próximo
     }
   }, [priority]);
 

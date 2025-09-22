@@ -221,7 +221,7 @@ export function TimelineManager() {
               size="sm"
               onClick={resetForm}
             >
-              <X className="w-4 h-4" />
+              Salvar Evento
             </Button>
           </div>
 
@@ -235,7 +235,7 @@ export function TimelineManager() {
                 value={formData.year}
                 onChange={(e) => setFormData(prev => ({ ...prev, year: parseInt(e.target.value) || new Date().getFullYear() }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                min="1900"
+               min="1500"
                 max="2100"
                 required
               />
@@ -333,9 +333,9 @@ export function TimelineManager() {
         {events.length === 0 ? (
           <Card className="p-8 text-center">
             <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">Nenhum evento na linha do tempo ainda.</p>
+            <p className="text-gray-500">Nenhum evento na linha do tempo da Catedral de São Miguel Arcanjo ainda.</p>
             <p className="text-sm text-gray-400 mt-1">
-              Clique em "Novo Evento" para adicionar o primeiro evento.
+              Clique em "Novo Evento" para adicionar o primeiro marco histórico da Catedral de São Miguel Arcanjo.
             </p>
           </Card>
         ) : (
