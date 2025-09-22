@@ -503,7 +503,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate, isFu
               
               <div className="aspect-video rounded-lg overflow-hidden mb-6">
                 <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3659.8164319403844!2d-46.46743958447833!3d-23.46571578474244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce63b925b4259b%3A0xc6c76a9a7a9a13a8!2sCatedral%20de%20S%C3%A3o%20Miguel%20Arcanjo!5e0!3m2!1spt-BR!2sbr!4v1655883204938!5m2!1spt-BR!2sbr" 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3659.1011515181385!2d-46.44790648934923!3d-23.492865858990694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce6164c743f801%3A0xd7d15a848c73427d!2sCatedral%20S%C3%A3o%20Miguel%20Arcanjo!5e0!3m2!1spt-BR!2sbr!4v1758541905588!5m2!1spt-BR!2sbr" 
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
