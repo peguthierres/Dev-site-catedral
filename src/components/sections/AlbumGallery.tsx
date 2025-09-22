@@ -454,11 +454,11 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
                       variant="outline"
                       size="sm"
                       onClick={handlePrevPhoto}
-                      className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-10 h-10 sm:w-12 sm:h-12 p-0"
+                      className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-20 rounded-full w-10 h-10 sm:w-12 sm:h-12 p-0"
                       style={{ 
-                        backgroundColor: 'rgba(0,0,0,0.5)',
-                        borderColor: 'rgba(255,255,255,0.2)',
-                        color: 'white'
+                        backgroundColor: 'var(--color-primary-from)',
+                        borderColor: 'var(--color-accent-2)',
+                        color: 'var(--color-button-text)'
                       }}
                     >
                       <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -467,11 +467,11 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
                       variant="outline"
                       size="sm"
                       onClick={handleNextPhoto}
-                      className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-10 h-10 sm:w-12 sm:h-12 p-0"
+                      className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-20 rounded-full w-10 h-10 sm:w-12 sm:h-12 p-0"
                       style={{ 
-                        backgroundColor: 'rgba(0,0,0,0.5)',
-                        borderColor: 'rgba(255,255,255,0.2)',
-                        color: 'white'
+                        backgroundColor: 'var(--color-primary-from)',
+                        borderColor: 'var(--color-accent-2)',
+                        color: 'var(--color-button-text)'
                       }}
                     >
                       <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -485,11 +485,11 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
                     variant="outline"
                     size="sm"
                     onClick={handleZoomIn}
-                    className="bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
+                    className="rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
                     style={{ 
-                      backgroundColor: 'rgba(0,0,0,0.5)',
-                      borderColor: 'rgba(255,255,255,0.2)',
-                      color: 'white'
+                      backgroundColor: 'var(--color-primary-from)',
+                      borderColor: 'var(--color-accent-2)',
+                      color: 'var(--color-button-text)'
                     }}
                   >
                     <ZoomIn className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -498,11 +498,11 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
                     variant="outline"
                     size="sm"
                     onClick={handleZoomOut}
-                    className="bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
+                    className="rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
                     style={{ 
-                      backgroundColor: 'rgba(0,0,0,0.5)',
-                      borderColor: 'rgba(255,255,255,0.2)',
-                      color: 'white'
+                      backgroundColor: 'var(--color-primary-from)',
+                      borderColor: 'var(--color-accent-2)',
+                      color: 'var(--color-button-text)'
                     }}
                   >
                     <ZoomOut className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -511,11 +511,11 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
                     variant="outline"
                     size="sm"
                     onClick={handleResetZoom}
-                    className="bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
+                    className="rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
                     style={{ 
-                      backgroundColor: 'rgba(0,0,0,0.5)',
-                      borderColor: 'rgba(255,255,255,0.2)',
-                      color: 'white'
+                      backgroundColor: 'var(--color-primary-from)',
+                      borderColor: 'var(--color-accent-2)',
+                      color: 'var(--color-button-text)'
                     }}
                   >
                     <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -527,18 +527,21 @@ export const AlbumGallery: React.FC<AlbumGalleryProps> = ({ onBack }) => {
                   variant="outline"
                   size="sm"
                   onClick={() => setSelectedPhoto(null)}
-                  className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 bg-black/50 border-white/20 text-white hover:bg-black/70 rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
+                  className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 rounded-full w-8 h-8 sm:w-10 sm:h-10 p-0"
                   style={{ 
-                    backgroundColor: 'rgba(0,0,0,0.5)',
-                    borderColor: 'rgba(255,255,255,0.2)',
-                    color: 'white'
+                    backgroundColor: 'var(--color-primary-from)',
+                    borderColor: 'var(--color-accent-2)',
+                    color: 'var(--color-button-text)'
                   }}
                 >
                   <X className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
 
                 {/* Photo Counter */}
-                <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-20 bg-black/50 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm">
+                <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-20 px-2 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm" style={{
+                  backgroundColor: 'var(--color-primary-from)',
+                  color: 'var(--color-button-text)'
+                }}>
                   {currentPhotoIndex + 1} de {albumPhotos.length}
                 </div>
 

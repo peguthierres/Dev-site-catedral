@@ -15,10 +15,10 @@ export const BlogManager: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
-    fetchPosts();
+    fetchBlogPosts();
   }, []);
 
-  const fetchPosts = async () => {
+  const fetchBlogPosts = async () => {
     try {
       const { data, error } = await supabase
         .from('blog_posts')
@@ -28,23 +28,37 @@ export const BlogManager: React.FC = () => {
       if (error) throw error;
       if (data) setPosts(data);
     } catch (error) {
-      console.error('Error fetching posts:', error);
+      console.error('Error fetching blog posts:', error);
+      toast.error('Erro ao carregar posts do blog');
     }
   };
 
+  const generateSlug = (title: string): string => {
+    return title
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+  };
+
   const handleCreatePost = () => {
-    const newPost: Partial<BlogPost> = {
+    const newPost: BlogPost = {
+      id: '',
       title: '',
       content: '',
       excerpt: '',
       featured_image: null,
-      author: '',
+      cloudinary_public_id: null,
+      author: 'Administrador',
       is_published: false,
       slug: '',
-      // CORREÇÃO: Adicione a data de criação aqui
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
-    setEditingPost(newPost as BlogPost);
+    setEditingPost(newPost);
     setIsCreating(true);
   };
 
@@ -54,57 +68,43 @@ export const BlogManager: React.FC = () => {
       return;
     }
 
-    // --- LÓGICA DE GERAÇÃO DE SLUG CORRIGIDA ---
-    let postSlug = editingPost.slug;
-    if (!postSlug) {
-      // Gera um slug a partir do título, removendo acentos e caracteres especiais
-      postSlug = editingPost.title
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, "")
-        .trim()
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-");
-    }
-
     try {
+      const slug = generateSlug(editingPost.title);
       const postData = {
         title: editingPost.title,
         content: editingPost.content,
-        excerpt: editingPost.excerpt || editingPost.content.replace(/<[^>]*>/g, '').substring(0, 200) + '...',
+        excerpt: editingPost.excerpt,
         featured_image: editingPost.featured_image,
-        author: editingPost.author || 'Administrador',
+        cloudinary_public_id: editingPost.cloudinary_public_id,
+        author: editingPost.author,
         is_published: editingPost.is_published,
-        slug: postSlug, // Adiciona o slug gerado
+        slug: slug,
+        updated_at: new Date().toISOString()
       };
 
       if (isCreating) {
-        // Para novos posts, inclua a data de criação explícita
-        const { data, error } = await supabase
-          .from('blog_posts')
-          .insert([{ ...postData, created_at: editingPost.created_at }]) // Envia a data de criação
-          .select()
-          .single();
-
-        if (error) throw error;
-        setPosts(prev => [data, ...prev]);
-      } else {
-        // Para posts existentes, apenas atualizar campos específicos
-        const updateData = {
-          ...postData,
-          updated_at: new Date().toISOString()
-        };
+        // Para novos posts, incluir created_at explicitamente
         const { error } = await supabase
           .from('blog_posts')
-          .update(updateData)
+          .insert([{
+            ...postData,
+            created_at: new Date().toISOString() // Data atual explícita
+          }]);
+
+        if (error) throw error;
+      } else {
+        // Para posts existentes, apenas atualizar
+        const { error } = await supabase
+          .from('blog_posts')
+          .update(postData)
           .eq('id', editingPost.id);
 
         if (error) throw error;
-        setPosts(prev => prev.map(p =>
-          p.id === editingPost.id ? { ...editingPost, ...updateData } : p
-        ));
       }
 
+      // Recarregar lista após salvar
+      await fetchBlogPosts();
+      
       setEditingPost(null);
       setIsCreating(false);
       toast.success('Post salvo com sucesso!');
@@ -124,7 +124,10 @@ export const BlogManager: React.FC = () => {
         .eq('id', post.id);
 
       if (error) throw error;
-      setPosts(prev => prev.filter(p => p.id !== post.id));
+
+      // Recarregar lista após exclusão para garantir sincronização
+      await fetchBlogPosts();
+      
       toast.success('Post excluído com sucesso!');
     } catch (error) {
       console.error('Error deleting post:', error);
@@ -136,13 +139,17 @@ export const BlogManager: React.FC = () => {
     try {
       const { error } = await supabase
         .from('blog_posts')
-        .update({ is_published: !post.is_published })
+        .update({ 
+          is_published: !post.is_published,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', post.id);
 
       if (error) throw error;
-      setPosts(prev => prev.map(p =>
-        p.id === post.id ? { ...p, is_published: !p.is_published } : p
-      ));
+
+      // Recarregar lista após alteração
+      await fetchBlogPosts();
+      
       toast.success('Status atualizado!');
     } catch (error) {
       console.error('Error toggling post:', error);
@@ -205,6 +212,7 @@ export const BlogManager: React.FC = () => {
     setEditingPost(prev => prev ? { ...prev, featured_image: result.url } : null);
     toast.success('Imagem carregada com sucesso!');
   };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -253,11 +261,21 @@ export const BlogManager: React.FC = () => {
                   )}
                   <div className="flex-1">
                     <h4 className="text-lg font-semibold text-gray-800 mb-1">{post.title}</h4>
-                    <p className="text-gray-600 text-sm mb-2 line-clamp-2">{post.excerpt}</p>
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <p className="text-gray-600 text-sm mb-2 line-clamp-2">
+                      {post.excerpt || post.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...'}
+                    </p>
+                    <div className="flex items-center gap-4 text-xs text-gray-500">
                       <span>Por: {post.author}</span>
                       <span>•</span>
-                      <span>{new Date(post.created_at).toLocaleDateString('pt-BR')}</span>
+                      <span>
+                        Criado: {new Date(post.created_at).toLocaleDateString('pt-BR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
                       <span>•</span>
                       <span>{post.is_published ? 'Publicado' : 'Rascunho'}</span>
                     </div>
@@ -325,7 +343,7 @@ export const BlogManager: React.FC = () => {
               </div>
 
               <div className="p-6 space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Título *
@@ -341,24 +359,6 @@ export const BlogManager: React.FC = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Slug (URL)
-                    </label>
-                    <input
-                      type="text"
-                      value={editingPost.slug}
-                      onChange={(e) => setEditingPost(prev => prev ? { ...prev, slug: e.target.value } : null)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-                      placeholder="slug-da-postagem (deixe vazio para gerar automaticamente)"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      URL da postagem: {window.location.origin}/#post/{editingPost.slug || 'slug-gerado-automaticamente'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Autor
                     </label>
                     <input
@@ -369,38 +369,18 @@ export const BlogManager: React.FC = () => {
                       placeholder="Nome do autor"
                     />
                   </div>
-
-                  <div className="flex items-end">
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Status
-                      </label>
-                      <div className="flex items-center gap-4">
-                        <label className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={editingPost.is_published}
-                            onChange={(e) => setEditingPost(prev => prev ? { ...prev, is_published: e.target.checked } : null)}
-                            className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500 focus:ring-2"
-                          />
-                          <span className="text-sm font-medium text-gray-700">
-                            {editingPost.is_published ? '✅ Publicado' : '📝 Rascunho'}
-                          </span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Resumo
+                    Resumo/Excerpt
                   </label>
                   <textarea
                     value={editingPost.excerpt}
                     onChange={(e) => setEditingPost(prev => prev ? { ...prev, excerpt: e.target.value } : null)}
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 resize-none"
-                    placeholder="Breve resumo do post (opcional - será gerado automaticamente se vazio)"
+                    placeholder="Resumo que aparecerá na listagem de posts"
                   />
                 </div>
 
@@ -415,6 +395,11 @@ export const BlogManager: React.FC = () => {
                         alt="Preview"
                         className="w-full h-48 object-cover rounded-lg"
                       />
+                      {editingPost.cloudinary_public_id && (
+                        <p className="text-xs text-blue-600 mt-1">
+                          Cloudinary: {editingPost.cloudinary_public_id}
+                        </p>
+                      )}
                     </div>
                   )}
                   <div className="flex gap-2">
@@ -424,6 +409,7 @@ export const BlogManager: React.FC = () => {
                       onFileSelect={handleImageUpload}
                       disabled={isUploading}
                       className="flex-1"
+                      folder="blog"
                     >
                       <Button
                         variant="outline"
@@ -439,7 +425,11 @@ export const BlogManager: React.FC = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setEditingPost(prev => prev ? { ...prev, featured_image: null } : null)}
+                        onClick={() => setEditingPost(prev => prev ? { 
+                          ...prev, 
+                          featured_image: null,
+                          cloudinary_public_id: null 
+                        } : null)}
                         className="text-red-600"
                       >
                         Remover
@@ -454,7 +444,8 @@ export const BlogManager: React.FC = () => {
                   </label>
                   <RichTextEditor
                     value={editingPost.content}
-                    onChange={(content) => setEditingPost(prev => prev ? { ...prev, content } : null)}
+                    onChange={(value) => setEditingPost(prev => prev ? { ...prev, content: value } : null)}
+                    placeholder="Escreva o conteúdo do post..."
                     height="400px"
                   />
                 </div>
@@ -468,21 +459,15 @@ export const BlogManager: React.FC = () => {
                       className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500 focus:ring-2"
                     />
                     <span className="text-sm font-medium text-gray-700">
-                      {editingPost.is_published ? '✅ Post será publicado' : '📝 Salvar como rascunho'}
+                      {editingPost.is_published ? '✅ Publicado' : '📝 Rascunho'}
                     </span>
                   </label>
-                  
-                  {editingPost.is_published && (
-                    <div className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
-                      Visível no site
-                    </div>
-                  )}
                 </div>
 
                 <div className="flex gap-2 pt-4 border-t">
                   <Button onClick={handleSavePost} className="flex-1">
                     <Save className="h-4 w-4" />
-                    {editingPost.is_published ? 'Publicar Post' : 'Salvar Rascunho'}
+                    Salvar
                   </Button>
                   <Button
                     variant="outline"
