@@ -45,8 +45,7 @@ export const BlogManager: React.FC = () => {
   };
 
   const handleCreatePost = () => {
-    const newPost: BlogPost = {
-      id: '',
+    const newPost: Partial<BlogPost> = {
       title: '',
       content: '',
       excerpt: '',
@@ -55,10 +54,8 @@ export const BlogManager: React.FC = () => {
       author: 'Administrador',
       is_published: false,
       slug: '',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
     };
-    setEditingPost(newPost);
+    setEditingPost(newPost as BlogPost);
     setIsCreating(true);
   };
 
@@ -72,28 +69,30 @@ export const BlogManager: React.FC = () => {
       const postData = {
         title: editingPost.title,
         content: editingPost.content,
-        excerpt: editingPost.excerpt,
+        excerpt: editingPost.excerpt || editingPost.content.replace(/<[^>]*>/g, '').substring(0, 200) + '...',
         featured_image: editingPost.featured_image,
         cloudinary_public_id: editingPost.cloudinary_public_id,
-        author: editingPost.author,
+        author: editingPost.author || 'Administrador',
         is_published: editingPost.is_published,
         slug: editingPost.slug || generateSlug(editingPost.title),
+        // Adicionando a data de atualização apenas no momento de salvar
         updated_at: new Date().toISOString()
       };
 
       if (isCreating) {
-        // Para novos posts, inclua created_at explicitamente
+        // CORRIGIDO: O Supabase gera o ID na inserção, basta capturá-lo
         const { data, error } = await supabase
           .from('blog_posts')
-          .insert([{ ...postData, created_at: new Date().toISOString() }])
+          .insert([{
+            ...postData,
+            created_at: new Date().toISOString()
+          }])
           .select()
           .single();
 
         if (error) throw error;
-        // Atualiza o estado local com o novo post
         setPosts(prev => [data, ...prev]);
       } else {
-        // Para posts existentes, apenas atualizar
         const { data, error } = await supabase
           .from('blog_posts')
           .update(postData)
@@ -102,12 +101,11 @@ export const BlogManager: React.FC = () => {
           .single();
 
         if (error) throw error;
-        // Atualiza o estado local com o post editado
         setPosts(prev => prev.map(p =>
-          p.id === editingPost.id ? { ...p, ...postData } : p
+          p.id === editingPost.id ? { ...p, ...data } : p
         ));
       }
-      
+
       setEditingPost(null);
       setIsCreating(false);
       toast.success('Post salvo com sucesso!');
@@ -128,9 +126,8 @@ export const BlogManager: React.FC = () => {
 
       if (error) throw error;
 
-      // ATUALIZA O ESTADO LOCAL: Remove o post da lista imediatamente
+      // Otimização: Atualiza o estado local imediatamente
       setPosts(prev => prev.filter(p => p.id !== post.id));
-      
       toast.success('Post excluído com sucesso!');
     } catch (error) {
       console.error('Error deleting post:', error);
@@ -140,19 +137,20 @@ export const BlogManager: React.FC = () => {
 
   const handleTogglePublished = async (post: BlogPost) => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('blog_posts')
         .update({ 
           is_published: !post.is_published,
           updated_at: new Date().toISOString()
         })
-        .eq('id', post.id);
+        .eq('id', post.id)
+        .select()
+        .single();
 
       if (error) throw error;
-
-      // ATUALIZA O ESTADO LOCAL: Altera o status do post na lista
+      
       setPosts(prev => prev.map(p =>
-        p.id === post.id ? { ...p, is_published: !p.is_published } : p
+        p.id === post.id ? { ...p, ...data } : p
       ));
       
       toast.success('Status atualizado!');
@@ -487,7 +485,7 @@ export const BlogManager: React.FC = () => {
                 <div className="flex gap-2 pt-4 border-t">
                   <Button onClick={handleSavePost} className="flex-1">
                     <Save className="h-4 w-4" />
-                    {editingPost.is_published ? 'Publicar Post' : 'Salvar Rascunho'}
+                    Salvar Post
                   </Button>
                   <Button
                     variant="outline"
