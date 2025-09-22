@@ -41,6 +41,8 @@ export const BlogManager: React.FC = () => {
       author: '',
       is_published: false,
       slug: '',
+      // CORREÇÃO: Adicione a data de criação aqui
+      created_at: new Date().toISOString()
     };
     setEditingPost(newPost as BlogPost);
     setIsCreating(true);
@@ -77,10 +79,10 @@ export const BlogManager: React.FC = () => {
       };
 
       if (isCreating) {
-        // Para novos posts, não definir created_at - deixar o Supabase definir automaticamente
+        // Para novos posts, inclua a data de criação explícita
         const { data, error } = await supabase
           .from('blog_posts')
-          .insert([postData])
+          .insert([{ ...postData, created_at: editingPost.created_at }]) // Envia a data de criação
           .select()
           .single();
 
