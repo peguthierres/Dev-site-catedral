@@ -379,13 +379,13 @@ export const CelebrationsPage: React.FC<CelebrationsPageProps> = ({ onBack }) =>
                     </p>
                   </div>
 
-                  {/* Informações Adicionais */}
-                  <div className="border rounded-lg p-4" style={{ backgroundColor: 'var(--color-accent-2)', opacity: 0.1, borderColor: 'var(--color-primary-from)' }}>
-                    <h4 className="text-lg font-semibold mb-3 flex items-center gap-2" style={{ color: 'var(--color-primary-from)' }}>
-                      <Heart className="h-5 w-5" />
+                  {/* Informações Adicionais (CORRIGIDO) */}
+                  <div className="border rounded-lg p-4 bg-gray-100" style={{ borderColor: 'var(--color-primary-from)' }}>
+                    <h4 className="text-lg font-semibold mb-3 flex items-center gap-2 text-black">
+                      <Heart className="h-5 w-5" style={{ color: 'var(--color-primary-from)' }} />
                       Informações Importantes
                     </h4>
-                    <div className="space-y-2 text-sm" style={{ color: 'var(--color-primary-from)' }}>
+                    <div className="space-y-2 text-sm text-black">
                       <p>• Chegue com 15 minutos de antecedência</p>
                       <p>• Confissões disponíveis 30 minutos antes da missa</p>
                       <p>• Estacionamento disponível na praça</p>
