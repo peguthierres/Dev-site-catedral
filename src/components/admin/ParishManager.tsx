@@ -15,6 +15,11 @@ export const ParishManager: React.FC = () => {
     address: '',
     phone: '',
     email: '',
+    whatsapp_number: null,
+    facebook_username: null,
+    instagram_username: null,
+    twitter_username: null,
+    youtube_channel: null,
     logo_url: null,
     logo_url_dark: null,
     logo_url_light: null
@@ -34,7 +39,7 @@ export const ParishManager: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('parishes')
-        .select('*, logo_url_dark, logo_url_light, cloudinary_public_id_dark, cloudinary_public_id_light')
+        .select('*, logo_url_dark, logo_url_light, cloudinary_public_id_dark, cloudinary_public_id_light, whatsapp_number, facebook_username, instagram_username, twitter_username, youtube_channel')
         .limit(1)
         .single();
 
@@ -263,6 +268,22 @@ export const ParishManager: React.FC = () => {
                 placeholder="contato@catedralsaomiguel.com.br"
               />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                WhatsApp (separado do telefone principal)
+              </label>
+              <input
+                type="text"
+                value={parish.whatsapp_number || ''}
+                onChange={(e) => setParish(prev => ({ ...prev, whatsapp_number: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="11999999999 (apenas números)"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Número do WhatsApp (apenas números, sem espaços ou símbolos)
+              </p>
+            </div>
           </div>
         </Card>
 
@@ -490,6 +511,91 @@ export const ParishManager: React.FC = () => {
                   />
                 )}
               </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Redes Sociais */}
+        <Card className="p-6">
+          <h4 className="text-lg font-semibold text-gray-800 mb-4">Redes Sociais</h4>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Facebook (nome de usuário)
+              </label>
+              <div className="flex items-center">
+                <span className="bg-gray-100 px-3 py-2 border border-r-0 border-gray-300 rounded-l-lg text-gray-600 text-sm">
+                  facebook.com/
+                </span>
+                <input
+                  type="text"
+                  value={parish.facebook_username || ''}
+                  onChange={(e) => setParish(prev => ({ ...prev, facebook_username: e.target.value }))}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="catedralsaomiguel"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Apenas o nome de usuário (sem @ ou URL completa)
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Instagram (nome de usuário)
+              </label>
+              <div className="flex items-center">
+                <span className="bg-gray-100 px-3 py-2 border border-r-0 border-gray-300 rounded-l-lg text-gray-600 text-sm">
+                  @
+                </span>
+                <input
+                  type="text"
+                  value={parish.instagram_username || ''}
+                  onChange={(e) => setParish(prev => ({ ...prev, instagram_username: e.target.value }))}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="catedralsaomiguel"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Twitter/X (nome de usuário)
+              </label>
+              <div className="flex items-center">
+                <span className="bg-gray-100 px-3 py-2 border border-r-0 border-gray-300 rounded-l-lg text-gray-600 text-sm">
+                  @
+                </span>
+                <input
+                  type="text"
+                  value={parish.twitter_username || ''}
+                  onChange={(e) => setParish(prev => ({ ...prev, twitter_username: e.target.value }))}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="catedralsm"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                YouTube (canal)
+              </label>
+              <div className="flex items-center">
+                <span className="bg-gray-100 px-3 py-2 border border-r-0 border-gray-300 rounded-l-lg text-gray-600 text-sm">
+                  youtube.com/
+                </span>
+                <input
+                  type="text"
+                  value={parish.youtube_channel || ''}
+                  onChange={(e) => setParish(prev => ({ ...prev, youtube_channel: e.target.value }))}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="@catedralsaomiguel ou c/CatedralSaoMiguel"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Nome do canal (com @) ou ID do canal (com c/)
+              </p>
             </div>
           </div>
         </Card>

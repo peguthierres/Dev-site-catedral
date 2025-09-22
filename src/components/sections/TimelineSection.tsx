@@ -377,16 +377,6 @@ export const TimelineSection: React.FC<TimelineSectionProps> = ({ onBack }) => {
                   <p className="leading-relaxed text-lg" style={{ color: 'var(--color-text-dark)' }}>
                     {selectedEvent.description}
                   </p>
-                  
-                  <div className="mt-6 pt-6 border-t border-gray-100">
-                    <p className="text-sm text-gray-500">
-                      Evento adicionado em: {new Date(selectedEvent.created_at).toLocaleDateString('pt-BR', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                      })}
-                    </p>
-                  </div>
 
                   <div className="text-center mt-8">
                     <Button

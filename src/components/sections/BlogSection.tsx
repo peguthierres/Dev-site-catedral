@@ -248,7 +248,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateHome }) => {
 
                         <div className="flex items-center gap-2 text-xs text-gray-500 mb-3 flex-wrap">
                           <Clock className="h-3 w-3" />
-                          <span>Publicado em {new Date(post.created_at).toLocaleDateString('pt-BR', {
+                          <span>Criado em {new Date(post.created_at).toLocaleDateString('pt-BR', {
                             day: 'numeric',
                             month: 'long',
                             year: 'numeric'

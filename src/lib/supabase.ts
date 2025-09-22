@@ -155,6 +155,11 @@ export interface Parish {
   address: string;
   phone: string;
   email: string;
+  whatsapp_number: string | null;
+  facebook_username: string | null;
+  instagram_username: string | null;
+  twitter_username: string | null;
+  youtube_channel: string | null;
   logo_url: string | null;
   logo_url_dark: string | null;
   logo_url_light: string | null;

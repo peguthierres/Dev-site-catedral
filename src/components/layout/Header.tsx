@@ -78,10 +78,10 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, parish }) => {
               }}>São Miguel Paulista</p>
             </div>
             <div className="block sm:hidden">
-              <h1 className="font-bold text-base" style={{ 
+              <h1 className="font-bold text-sm" style={{ 
                 color: 'var(--color-header-text)',
                 fontFamily: 'var(--site-header-font-family)',
-              }}>Catedral São Miguel</h1>
+              }}>Catedral de São Miguel Arcanjo</h1>
             </div>
           </motion.div>
 
