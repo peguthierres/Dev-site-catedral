@@ -69,7 +69,6 @@ export const BlogManager: React.FC = () => {
     }
 
     try {
-      const slug = generateSlug(editingPost.title);
       const postData = {
         title: editingPost.title,
         content: editingPost.content,
@@ -78,12 +77,12 @@ export const BlogManager: React.FC = () => {
         cloudinary_public_id: editingPost.cloudinary_public_id,
         author: editingPost.author,
         is_published: editingPost.is_published,
-        slug: slug,
+        slug: editingPost.slug || generateSlug(editingPost.title),
         updated_at: new Date().toISOString()
       };
 
       if (isCreating) {
-        // Para novos posts, incluir created_at explicitamente
+        // Para novos posts, inclua created_at explicitamente
         const { error } = await supabase
           .from('blog_posts')
           .insert([{
@@ -343,6 +342,7 @@ export const BlogManager: React.FC = () => {
               </div>
 
               <div className="p-6 space-y-6">
+                {/* Campos de Título, Slug e Autor agrupados */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -354,9 +354,23 @@ export const BlogManager: React.FC = () => {
                       onChange={(e) => setEditingPost(prev => prev ? { ...prev, title: e.target.value } : null)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
                       placeholder="Título do post"
+                      required
                     />
                   </div>
-
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Slug (URL)
+                    </label>
+                    <input
+                      type="text"
+                      value={editingPost.slug}
+                      onChange={(e) => setEditingPost(prev => prev ? { ...prev, slug: e.target.value } : null)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
+                      placeholder="deixe vazio para gerar automaticamente"
+                    />
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Autor
@@ -368,6 +382,20 @@ export const BlogManager: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
                       placeholder="Nome do autor"
                     />
+                  </div>
+                  {/* BOTÃO DE STATUS MOVIDO PARA CÁ */}
+                  <div className="flex items-end">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={editingPost.is_published}
+                        onChange={(e) => setEditingPost(prev => prev ? { ...prev, is_published: e.target.checked } : null)}
+                        className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500 focus:ring-2"
+                      />
+                      <span className="text-sm font-medium text-gray-700">
+                        {editingPost.is_published ? '✅ Publicado' : '📝 Rascunho'}
+                      </span>
+                    </label>
                   </div>
                 </div>
 
@@ -450,24 +478,10 @@ export const BlogManager: React.FC = () => {
                   />
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={editingPost.is_published}
-                      onChange={(e) => setEditingPost(prev => prev ? { ...prev, is_published: e.target.checked } : null)}
-                      className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500 focus:ring-2"
-                    />
-                    <span className="text-sm font-medium text-gray-700">
-                      {editingPost.is_published ? '✅ Publicado' : '📝 Rascunho'}
-                    </span>
-                  </label>
-                </div>
-
                 <div className="flex gap-2 pt-4 border-t">
                   <Button onClick={handleSavePost} className="flex-1">
                     <Save className="h-4 w-4" />
-                    Salvar
+                    {editingPost.is_published ? 'Publicar Post' : 'Salvar Rascunho'}
                   </Button>
                   <Button
                     variant="outline"
