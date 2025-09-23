@@ -176,7 +176,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate, isFu
           )}
 
           {/* Informações de Contato e Redes Sociais */}
-          <div className="grid lg:grid-cols-1 gap-12">
+          <div className="grid lg:grid-cols-2 gap-8">
             <motion.div
               initial={{ opacity: 0, y: -50 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -252,12 +252,27 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate, isFu
                   </div>
                 </div>
 
+              </Card>
+            </motion.div>
+
+            {/* Contato Rápido e Redes Sociais */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <Card className="p-8 h-full">
+                <h3 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text-dark)' }}>
+                  Contato Rápido
+                </h3>
+
                 {/* Botões de Contato Rápido */}
-                <div className="mt-8 pt-6 border-t border-gray-200">
+                <div className="mb-8">
                   <h4 className="font-semibold mb-4" style={{ color: 'var(--color-text-dark)' }}>
-                    Contato Rápido
+                    Entre em Contato
                   </h4>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3">
                     {/* WhatsApp */}
                     {(parish?.whatsapp_number || parish?.phone) && (
                       <Button
@@ -291,7 +306,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate, isFu
                 </div>
 
                 {/* Redes Sociais */}
-                <div className="mt-8 pt-6 border-t border-gray-200">
+                <div>
                   <h4 className="font-semibold mb-4" style={{ color: 'var(--color-text-dark)' }}>
                     Siga-nos nas Redes Sociais
                   </h4>
@@ -349,7 +364,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ onNavigate, isFu
                 </div>
               </Card>
             </motion.div>
-
           </div>
 
           {/* Mapa e Informações Adicionais */}

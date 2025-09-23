@@ -159,9 +159,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ onNavigateHome }) => {
               className="text-center mb-16"
             >
               <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent" style={{
-                background: 'linear-gradient(to right, var(--color-primary-from), var(--color-secondary-from))',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text'
+                color: 'var(--color-text-dark)'
               }}>
                 Mensagem de Fé
               </h2>

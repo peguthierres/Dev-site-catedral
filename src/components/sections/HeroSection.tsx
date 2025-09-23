@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Church, Calendar, MapPin } from 'lucide-react';
+import { Cross, Calendar, MapPin } from 'lucide-react';
 import { Button } from '../ui/Button';
 
 interface HeroSectionProps {
@@ -30,7 +30,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
           transition={{ duration: 0.8 }}
           className="mb-6 sm:mb-8"
         >
-          <Church className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-4 sm:mb-6" style={{ color: 'var(--color-accent-2)' }} />
+          <Cross className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-4 sm:mb-6" style={{ color: 'var(--color-accent-2)' }} />
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight" style={{ color: 'var(--color-text-light)' }}>
             Catedral de São Miguel
           </h1>
@@ -78,6 +78,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
             </Button>
             <Button
               variant="outline"
+              variant="secondary"
               size={window.innerWidth < 640 ? "md" : "lg"}
               onClick={() => onNavigate('photos')}
               className="text-sm sm:text-base"

@@ -17,9 +17,8 @@ import { PastoralManager } from './PastoralManager';
 import { UrgentPopupManager } from './UrgentPopupManager';
 import { AlbumManager } from './AlbumManager';
 import { ThemeCustomizer } from './ThemeCustomizer';
-import { EmailSettingsManager } from './EmailSettingsManager';
 import { supabase } from '../../lib/supabase';
-import { Palette, Mail } from 'lucide-react';
+import { Palette } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface AdminPanelProps {
@@ -32,7 +31,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const tabs = [
     { id: 'parish', label: 'Informações da Paróquia', icon: FileText },
     { id: 'theme', label: 'Personalizar Cores', icon: Palette },
-    { id: 'email', label: 'Configurações de E-mail', icon: Mail },
     { id: 'cloudinary', label: 'Cloudinary', icon: Settings },
     { id: 'popups', label: 'Pop-ups Urgentes', icon: Calendar },
     { id: 'pastorals', label: 'Pastorais', icon: Users },
@@ -63,8 +61,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         return <ParishManager />;
       case 'theme':
         return <ThemeCustomizer />;
-      case 'email':
-        return <EmailSettingsManager />;
       case 'cloudinary':
         return <CloudinarySettings />;
       case 'popups':

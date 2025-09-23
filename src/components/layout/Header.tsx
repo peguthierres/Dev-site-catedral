@@ -112,7 +112,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, parish }) => {
               touchAction: 'manipulation',
             }}
           >
-            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {isMenuOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
           </button>
         </div>
 
