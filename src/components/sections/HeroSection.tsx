@@ -97,7 +97,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
           <p className="text-xs sm:text-sm text-center">
             "São Miguel Arcanjo, defendei-nos no combate. Sede o nosso refúgio contra as maldades e ciladas do demônio. ".
           </p>
-          <p className="text-xs mt-1 text-blue-200 text-center">- Trecho da Oração de São Miguel</p>
         </motion.div>
       </div>
 
