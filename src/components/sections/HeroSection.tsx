@@ -95,7 +95,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
           className="text-white/70 px-4"
         >
           <p className="text-xs sm:text-sm text-center">
-            "São Miguel Arcanjo, defendei-nos no combate. Sede o nosso refúgio contra as maldades e ciladas do demônio. ".
+            "São Miguel Arcanjo, defendei-nos no combate. Sede o nosso refúgio contra as maldades e ciladas do demônio ".
           </p>
         </motion.div>
       </div>
