@@ -84,7 +84,7 @@ export const SlidesSection: React.FC = () => {
           {
             id: '2',
             title: 'Nossa Comunidade Unida',
-            description: 'Fiéis de todas as idades unidos pela fé no Senhor Santo Cristo dos Milagres',
+            description: 'Sempre perto de voçe.',
             image_url: 'https://images.pexels.com/photos/7220900/pexels-photo-7220900.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
             order_index: 1,
             is_active: true,
