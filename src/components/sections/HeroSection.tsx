@@ -1,13 +1,29 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Cross, Calendar, MapPin } from 'lucide-react';
+import { Cross, MessageCircle } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { Parish } from '../../lib/supabase';
+import { useTheme } from '../../lib/theme';
 
 interface HeroSectionProps {
   onNavigate: (section: string) => void;
+  parish?: Parish | null;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate, parish }) => {
+  const { theme, isLoading: themeLoading } = useTheme();
+
+  const handleWhatsAppClick = () => {
+    const phone = parish?.whatsapp_number || parish?.phone?.replace(/\D/g, '');
+    if (phone) {
+      const cleanPhone = phone.replace(/\D/g, '');
+      const message = encodeURIComponent('Olá! Gostaria de entrar em contato com a Catedral de São Miguel Arcanjo.');
+      window.open(`https://wa.me/55${cleanPhone}?text=${message}`, '_blank');
+    } else {
+      alert('Número do WhatsApp não configurado. Entre em contato pelo telefone: ' + (parish?.phone || '(11) 2032-4160'));
+    }
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-14 sm:pt-16">
       {/* Background Gradient */}
@@ -32,13 +48,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
         >
           <Cross className="h-16 w-16 sm:h-20 sm:w-20 mx-auto mb-4 sm:mb-6" style={{ color: 'var(--color-accent-2)' }} />
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight" style={{ color: 'var(--color-text-light)' }}>
-            Catedral de São Miguel
+            {parish?.name || 'Catedral de São Miguel Arcanjo'}
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl mb-2" style={{ color: 'var(--color-accent-2)' }}>
-            Arcanjo
-          </p>
           <p className="text-base sm:text-lg mb-6 sm:mb-8" style={{ color: 'var(--color-accent-1)' }}>
-            São Miguel Paulista, São Paulo
+            {parish?.address?.split(',')[1]?.trim() || 'São Miguel Paulista, São Paulo'}
           </p>
         </motion.div>
 
@@ -49,41 +62,30 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
           className="bg-white/10 backdrop-blur-md rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 border border-white/20"
         >
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4" style={{ color: 'var(--color-accent-2)' }}>
-            Tradição e Fé
+            {themeLoading ? 'Tradição e Fé' : theme.site_hero_title}
           </h2>
           <p className="text-base sm:text-lg leading-relaxed mb-6" style={{ color: 'var(--color-text-light)' }}>
-            Uma catedral histórica no coração de São Miguel Paulista, sendo referência de fé e tradição 
-            para toda a região. Um lugar sagrado onde gerações encontram paz e esperança.
+            {themeLoading ? 'Uma catedral histórica no coração de São Miguel Paulista, sendo referência de fé e tradição para toda a região. Um lugar sagrado onde gerações encontram paz e esperança.' : theme.site_hero_description}
           </p>
-          
-          <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 mb-6" style={{ color: 'var(--color-text-light)' }}>
-            <div className="flex items-center gap-3">
-              <Calendar className="h-5 w-5" style={{ color: 'var(--color-accent-2)' }} />
-              <span className="text-sm sm:text-base">Fundada em 1622</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <MapPin className="h-5 w-5" style={{ color: 'var(--color-accent-2)' }} />
-              <span className="text-sm sm:text-base">São Miguel Paulista, SP</span>
-            </div>
-          </div>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Button
               variant="secondary"
               size={window.innerWidth < 640 ? "md" : "lg"}
-              onClick={() => onNavigate('history')}
+              onClick={handleWhatsAppClick}
               className="text-sm sm:text-base"
             >
-              Conheça Nossa História
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Fale Conosco (WhatsApp)
             </Button>
             <Button
-              variant="outline"
               variant="secondary"
               size={window.innerWidth < 640 ? "md" : "lg"}
-              onClick={() => onNavigate('photos')}
+              onClick={handleWhatsAppClick}
               className="text-sm sm:text-base"
             >
-              Ver Fotos
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Enviar Mensagem
             </Button>
           </div>
         </motion.div>
@@ -95,8 +97,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
           className="text-white/70 px-4"
         >
           <p className="text-xs sm:text-sm text-center">
-            "São Miguel Arcanjo, defendei-nos no combate. Sede o nosso refúgio contra as maldades e ciladas do demônio ".
+            "Porque onde estiverem dois ou três reunidos em meu nome, aí estou eu no meio deles".
           </p>
+          <p className="text-xs mt-1 text-blue-200 text-center">- Mateus 18,20</p>
         </motion.div>
       </div>
 

@@ -1,3 +1,4 @@
+import React from 'react';
 import { supabase } from './supabase';
 
 interface ThemeSettings {
@@ -16,6 +17,8 @@ interface ThemeSettings {
   site_button_text_color: string;
   site_header_text_color: string;
   site_header_font_family: string;
+  site_hero_title: string;
+  site_hero_description: string;
 }
 
 // Cache das configurações de tema
@@ -40,6 +43,8 @@ const defaultTheme: ThemeSettings = {
   site_button_text_color: '#FFFFFF',
   site_header_text_color: '#FFFFFF',
   site_header_font_family: 'Inter',
+  site_hero_title: 'Tradição e Fé',
+  site_hero_description: 'Uma catedral histórica no coração de São Miguel Paulista, sendo referência de fé e tradição para toda a região. Um lugar sagrado onde gerações encontram paz e esperança.',
 };
 
 // Buscar configurações de tema

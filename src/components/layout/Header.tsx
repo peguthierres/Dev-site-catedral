@@ -14,6 +14,7 @@ export const Header: React.FC<HeaderProps> = ({ onNavigate, parish }) => {
   const menuItems = [
     { id: 'home', label: 'Início' },
     { id: 'history', label: 'História' },
+    { id: 'capela', label: 'Capela São Miguel' },
     { id: 'pastorals', label: 'Pastorais' },
     { id: 'celebrations', label: 'Celebrações' },
     { id: 'blog', label: 'Blog' },

@@ -7,9 +7,10 @@ import { supabase, Celebration } from '../../lib/supabase';
 
 interface CelebrationsPageProps {
   onBack: () => void;
+  isHomePage?: boolean;
 }
 
-export const CelebrationsPage: React.FC<CelebrationsPageProps> = ({ onBack }) => {
+export const CelebrationsPage: React.FC<CelebrationsPageProps> = ({ onBack, isHomePage = false }) => {
   const [celebrations, setCelebrations] = useState<Celebration[]>([]);
   const [selectedCelebration, setSelectedCelebration] = useState<Celebration | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -159,32 +160,56 @@ export const CelebrationsPage: React.FC<CelebrationsPageProps> = ({ onBack }) =>
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-y-auto">
-      {/* Header */}
-      <div className="text-white shadow-lg sticky top-0 z-50 safe-area-inset-top" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-              <Button
-                variant="outline"
-                onClick={onBack}
-                className="bg-white/20 border-white/30 text-white hover:bg-white/30 flex items-center gap-1 sm:gap-2 flex-shrink-0"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Voltar</span>
-              </Button>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold">Escala de Celebrações</h1>
-                <p className="text-sm sm:text-base truncate" style={{ color: 'var(--color-accent-2)' }}>
-                  Horários das missas e celebrações da catedral
-                </p>
+      {/* Header - apenas quando não é página inicial */}
+      {!isHomePage && (
+        <div className="text-white shadow-lg sticky top-0 z-50 safe-area-inset-top" style={{ background: 'linear-gradient(to right, var(--color-primary-from), var(--color-primary-to))' }}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                <Button
+                  variant="outline"
+                  onClick={onBack}
+                  className="bg-white/20 border-white/30 text-white hover:bg-white/30 flex items-center gap-1 sm:gap-2 flex-shrink-0"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline">Voltar</span>
+                </Button>
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-2xl sm:text-3xl font-bold">Escala de Celebrações</h1>
+                  <p className="text-sm sm:text-base truncate" style={{ color: 'var(--color-accent-2)' }}>
+                    Horários das missas e celebrações da catedral
+                  </p>
+                </div>
               </div>
+              <Church className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" style={{ color: 'var(--color-accent-2)' }} />
             </div>
-            <Church className="h-8 w-8 sm:h-12 sm:w-12 flex-shrink-0" style={{ color: 'var(--color-accent-2)' }} />
           </div>
         </div>
-      </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Título da seção - apenas na página inicial */}
+        {isHomePage && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent" style={{
+              background: 'linear-gradient(to right, var(--color-primary-from), var(--color-secondary-from))',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text'
+            }}>
+              Horários de Celebrações
+            </h2>
+            <p className="text-xl max-w-3xl mx-auto" style={{ color: 'var(--color-text-dark)' }}>
+              Confira os horários das missas e celebrações da nossa catedral
+            </p>
+          </motion.div>
+        )}
+
         {celebrations.length === 0 ? (
           <Card className="p-12 text-center">
             <Church className="h-16 w-16 text-gray-400 mx-auto mb-4" />

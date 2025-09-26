@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, FileText, Image, Calendar, Users, LogOut, X } from 'lucide-react';
+import { Settings, FileText, Image, Calendar, Users, LogOut, X, Church, Heart } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { ParishManager } from './ParishManager';
@@ -17,8 +17,9 @@ import { PastoralManager } from './PastoralManager';
 import { UrgentPopupManager } from './UrgentPopupManager';
 import { AlbumManager } from './AlbumManager';
 import { ThemeCustomizer } from './ThemeCustomizer';
+import { CapelaManager } from './CapelaManager';
 import { supabase } from '../../lib/supabase';
-import { Palette } from 'lucide-react';
+import { Palette, Building } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface AdminPanelProps {
@@ -30,6 +31,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
   const tabs = [
     { id: 'parish', label: 'Informações da Paróquia', icon: FileText },
+    { id: 'capela', label: 'Capela São Miguel', icon: Church },
+    { id: 'capela-donation', label: 'Doações da Capela', icon: Heart },
     { id: 'theme', label: 'Personalizar Cores', icon: Palette },
     { id: 'cloudinary', label: 'Cloudinary', icon: Settings },
     { id: 'popups', label: 'Pop-ups Urgentes', icon: Calendar },
@@ -59,6 +62,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     switch (activeTab) {
       case 'parish':
         return <ParishManager />;
+      case 'capela':
+        return <CapelaManager />;
+      case 'capela-donation':
+        return <CapelaManager />; // Reutiliza o CapelaManager que agora inclui doações
       case 'theme':
         return <ThemeCustomizer />;
       case 'cloudinary':

@@ -5,6 +5,7 @@ import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { FileUpload } from '../ui/FileUpload'; // Assuming FileUpload passes a File object
 import { supabase, Parish } from '../../lib/supabase';
+import { invalidateThemeCache } from '../../lib/theme';
 import toast from 'react-hot-toast';
 
 export const ParishManager: React.FC = () => {
@@ -24,6 +25,10 @@ export const ParishManager: React.FC = () => {
     logo_url_dark: null,
     logo_url_light: null
   });
+  const [heroSettings, setHeroSettings] = useState({
+    site_hero_title: 'Tradição e Fé',
+    site_hero_description: 'Uma catedral histórica no coração de São Miguel Paulista, sendo referência de fé e tradição para toda a região. Um lugar sagrado onde gerações encontram paz e esperança.'
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState({
     original: false,
@@ -33,6 +38,7 @@ export const ParishManager: React.FC = () => {
 
   useEffect(() => {
     fetchParishData();
+    fetchHeroSettings();
   }, []);
 
   const fetchParishData = async () => {
@@ -56,6 +62,35 @@ export const ParishManager: React.FC = () => {
       if (error instanceof Error && error.message !== 'PGRST116') {
         toast.error('Erro ao buscar dados da paróquia.');
       }
+    }
+  };
+
+  const fetchHeroSettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('system_settings')
+        .select('key, value')
+        .in('key', ['site_hero_title', 'site_hero_description']);
+
+      if (error) {
+        console.error('Error fetching hero settings:', error);
+        return;
+      }
+
+      if (data) {
+        const settings: any = {};
+        data.forEach(setting => {
+          settings[setting.key] = setting.value;
+        });
+        
+        setHeroSettings(prev => ({
+          ...prev,
+          site_hero_title: settings.site_hero_title || 'Tradição e Fé',
+          site_hero_description: settings.site_hero_description || 'Uma catedral histórica no coração de São Miguel Paulista, sendo referência de fé e tradição para toda a região. Um lugar sagrado onde gerações encontram paz e esperança.'
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching hero settings:', error);
     }
   };
 
@@ -92,6 +127,37 @@ export const ParishManager: React.FC = () => {
 
         if (insertError) throw insertError;
       }
+
+      // Save hero settings to system_settings
+      const heroSettingsArray = [
+        {
+          key: 'site_hero_title',
+          value: heroSettings.site_hero_title,
+          description: 'Título principal da página inicial',
+          is_encrypted: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          key: 'site_hero_description', 
+          value: heroSettings.site_hero_description,
+          description: 'Descrição principal da página inicial',
+          is_encrypted: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+      ];
+
+      for (const setting of heroSettingsArray) {
+        const { error: upsertError } = await supabase
+          .from('system_settings')
+          .upsert(setting, { onConflict: 'key' });
+        
+        if (upsertError) throw upsertError;
+      }
+
+      // Invalidate theme cache to reflect changes
+      invalidateThemeCache();
 
       toast.success('Informações salvas com sucesso!');
     } catch (error) {
@@ -192,7 +258,6 @@ export const ParishManager: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-2xl font-bold text-gray-800">Informações da Paróquia</h3>
-        <h3 className="text-2xl font-bold text-gray-800">Informações da Catedral</h3>
         <Button onClick={handleSave} disabled={isLoading}>
           <Save className="h-4 w-4" />
           {isLoading ? 'Salvando...' : 'Salvar'}
@@ -202,9 +267,41 @@ export const ParishManager: React.FC = () => {
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Basic Information */}
         <Card className="p-6">
-          <h4 className="text-lg font-semibold text-gray-800 mb-4">Informações Básicas da Catedral</h4>
+          <h4 className="text-lg font-semibold text-gray-800 mb-4">Informações Básicas</h4>
           
           <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Título Principal da Página (Hero)
+              </label>
+              <input
+                type="text"
+                value={heroSettings.site_hero_title}
+                onChange={(e) => setHeroSettings(prev => ({ ...prev, site_hero_title: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Ex: Tradição e Fé"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Título que aparece na seção principal da página inicial
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Descrição Principal da Página (Hero)
+              </label>
+              <textarea
+                value={heroSettings.site_hero_description}
+                onChange={(e) => setHeroSettings(prev => ({ ...prev, site_hero_description: e.target.value }))}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                placeholder="Descrição que aparece na seção principal"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Descrição que aparece abaixo do título principal na página inicial
+              </p>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Nome da Catedral
