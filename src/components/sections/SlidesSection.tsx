@@ -76,7 +76,7 @@ export const SlidesSection: React.FC = () => {
             id: '1',
             title: '40 Anos de Fé e Comunhão',
             description: 'Celebrando quatro décadas de bênçãos, milagres e união em Cristo',
-            image_url: 'https://images.pexels.com/photos/8468459/pexels-photo-8468459.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+            image_url: '/slides/img01.jpg',
             order_index: 0,
             is_active: true,
             created_at: new Date().toISOString()
@@ -84,8 +84,8 @@ export const SlidesSection: React.FC = () => {
           {
             id: '2',
             title: 'Nossa Comunidade Unida',
-            description: 'Sempre perto de voçe.',
-            image_url: 'https://images.pexels.com/photos/7220900/pexels-photo-7220900.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+            description: 'Fiéis de todas as idades unidos pela fé no Senhor Santo Cristo dos Milagres',
+            image_url: '/slides/img02.jpg',
             order_index: 1,
             is_active: true,
             created_at: new Date().toISOString()
@@ -94,7 +94,7 @@ export const SlidesSection: React.FC = () => {
             id: '3',
             title: 'Tradição e Modernidade',
             description: 'Preservando nossa rica tradição enquanto abraçamos o futuro com esperança',
-            image_url: 'https://images.pexels.com/photos/6608313/pexels-photo-6608313.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+            image_url: '/slides/img01.png',
             order_index: 2,
             is_active: true,
             created_at: new Date().toISOString()
