@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Heart, Copy, Check, CreditCard, Building, Smartphone, DollarSign, Shield, Info, Gift, Church, Star, Users } from 'lucide-react';
+import { ArrowLeft, Heart, Copy, Check, CreditCard, Building, Smartphone, DollarSign, Shield, Info, Gift, Church, Star, Users, Loader } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { supabase } from '../lib/supabase';
@@ -34,6 +34,14 @@ interface DonationSettings {
   capela_transparency_text: string;
 }
 
+interface StripeSettings {
+  stripe_enabled: boolean;
+  stripe_publishable_key: string;
+  stripe_minimum_amount: string;
+  stripe_currency: string;
+  stripe_company_name: string;
+}
+
 const defaultSettings: DonationSettings = {
   capela_donation_enabled: true,
   capela_donation_title: 'Colabore com a Capela São Miguel',
@@ -60,13 +68,29 @@ const defaultSettings: DonationSettings = {
 
 export const CapelaDonatePage: React.FC<CapelaDonatePage> = ({ onBack }) => {
   const [settings, setSettings] = useState<DonationSettings>(defaultSettings);
+  const [stripeSettings, setStripeSettings] = useState<StripeSettings>({
+    stripe_enabled: false,
+    stripe_publishable_key: '',
+    stripe_minimum_amount: '10',
+    stripe_currency: 'BRL',
+    stripe_company_name: 'Capela São Miguel Arcanjo'
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [copiedPix, setCopiedPix] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [customAmount, setCustomAmount] = useState('');
+  const [isProcessingStripe, setIsProcessingStripe] = useState(false);
+  const [donorInfo, setDonorInfo] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    purpose: '',
+    message: ''
+  });
 
   useEffect(() => {
     fetchDonationSettings();
+    fetchStripeSettings();
   }, []);
 
   const fetchDonationSettings = async () => {
@@ -97,12 +121,36 @@ export const CapelaDonatePage: React.FC<CapelaDonatePage> = ({ onBack }) => {
     }
   };
 
+  const fetchStripeSettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('system_settings')
+        .select('key, value')
+        .in('key', ['stripe_enabled', 'stripe_publishable_key', 'stripe_minimum_amount', 'stripe_currency', 'stripe_company_name']);
+
+      if (error) throw error;
+
+      const fetchedStripeSettings: Partial<StripeSettings> = {};
+      data?.forEach(setting => {
+        if (setting.key === 'stripe_enabled') {
+          fetchedStripeSettings[setting.key] = setting.value === 'true';
+        } else {
+          fetchedStripeSettings[setting.key as keyof StripeSettings] = setting.value as any;
+        }
+      });
+
+      setStripeSettings(prev => ({ ...prev, ...fetchedStripeSettings }));
+    } catch (error) {
+      console.error('Error fetching Stripe settings:', error);
+    }
+  };
+
   const copyPixKey = async () => {
     if (!settings.capela_pix_key) {
       toast.error('Chave PIX não configurada');
       return;
     }
-
+    
     try {
       await navigator.clipboard.writeText(settings.capela_pix_key);
       setCopiedPix(true);
@@ -132,19 +180,59 @@ export const CapelaDonatePage: React.FC<CapelaDonatePage> = ({ onBack }) => {
   };
 
   const handleStripeDonation = () => {
-    if (!settings.capela_stripe_enabled) {
+    if (!stripeSettings.stripe_enabled) {
       toast.error('Doações via cartão ainda não disponíveis. Use PIX ou transferência bancária.');
       return;
     }
 
     const amount = selectedAmount || parseFloat(customAmount) || 0;
-    if (amount < parseFloat(settings.capela_minimum_amount)) {
-      toast.error(`Valor mínimo: R$ ${settings.capela_minimum_amount}`);
+    const minimumAmount = parseFloat(stripeSettings.stripe_minimum_amount);
+    if (amount < minimumAmount) {
+      toast.error(`Valor mínimo: R$ ${minimumAmount.toFixed(2)}`);
       return;
     }
 
-    // Aqui seria integrado o Stripe
-    toast.success('Redirecionando para pagamento via cartão...');
+    if (!donorInfo.email) {
+      toast.error('Por favor, preencha seu email para continuar');
+      return;
+    }
+
+    processStripeDonation(amount);
+  };
+
+  const processStripeDonation = async (amount: number) => {
+    setIsProcessingStripe(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-stripe-checkout-session`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: amount,
+          donor_name: donorInfo.name,
+          donor_email: donorInfo.email,
+          donor_phone: donorInfo.phone,
+          donation_purpose: donorInfo.purpose || 'Doação para Capela São Miguel',
+          message: donorInfo.message
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Redirecionar para o checkout do Stripe
+        window.location.href = result.checkout_url;
+      } else {
+        throw new Error(result.error || 'Erro ao processar pagamento');
+      }
+    } catch (error) {
+      console.error('Error processing Stripe donation:', error);
+      toast.error('Erro ao processar doação via cartão: ' + (error instanceof Error ? error.message : 'Erro desconhecido'));
+    } finally {
+      setIsProcessingStripe(false);
+    }
   };
 
   const suggestedAmounts = settings.capela_suggested_amounts.split(',').map(a => parseInt(a.trim())).filter(a => !isNaN(a));
@@ -432,40 +520,94 @@ export const CapelaDonatePage: React.FC<CapelaDonatePage> = ({ onBack }) => {
           <Card className="p-6">
             <div className="text-center mb-6">
               <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
-                settings.capela_stripe_enabled ? '' : 'opacity-50'
+                stripeSettings.stripe_enabled ? '' : 'opacity-50'
               }`} style={{ backgroundColor: 'var(--color-accent-1)' }}>
                 <CreditCard className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">
                 Cartão de Crédito
-                {!settings.capela_stripe_enabled && <span className="text-sm text-gray-500 ml-2">(Em breve)</span>}
+                {!stripeSettings.stripe_enabled && <span className="text-sm text-gray-500 ml-2">(Desabilitado)</span>}
               </h3>
               <p className="text-gray-600 text-sm">Doação segura via cartão de crédito</p>
             </div>
 
-            {settings.capela_stripe_enabled ? (
-              <div className="text-center">
-                <p className="text-sm text-gray-600 mb-4">
-                  Valor mínimo: R$ {settings.capela_minimum_amount}
-                </p>
-                <Button
-                  variant="secondary"
-                  onClick={handleStripeDonation}
-                  className="flex items-center justify-center gap-2"
-                  disabled={!selectedAmount && !customAmount}
-                >
-                  <CreditCard className="h-4 w-4" />
-                  Doar com Cartão
-                  {(selectedAmount || customAmount) && (
-                    <span>- R$ {selectedAmount || customAmount}</span>
-                  )}
-                </Button>
+            {stripeSettings.stripe_enabled ? (
+              <div className="space-y-4">
+                {/* Formulário de Informações do Doador */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-800 mb-3">Informações do Doador</h4>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      placeholder="Nome completo"
+                      value={donorInfo.name}
+                      onChange={(e) => setDonorInfo(prev => ({ ...prev, name: e.target.value }))}
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email *"
+                      value={donorInfo.email}
+                      onChange={(e) => setDonorInfo(prev => ({ ...prev, email: e.target.value }))}
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                      required
+                    />
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-3 mt-3">
+                    <input
+                      type="tel"
+                      placeholder="Telefone"
+                      value={donorInfo.phone}
+                      onChange={(e) => setDonorInfo(prev => ({ ...prev, phone: e.target.value }))}
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Finalidade da doação"
+                      value={donorInfo.purpose}
+                      onChange={(e) => setDonorInfo(prev => ({ ...prev, purpose: e.target.value }))}
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                  <textarea
+                    placeholder="Mensagem (opcional)"
+                    value={donorInfo.message}
+                    onChange={(e) => setDonorInfo(prev => ({ ...prev, message: e.target.value }))}
+                    rows={2}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm mt-3 resize-none"
+                  />
+                </div>
+
+                <div className="text-center">
+                  <p className="text-sm text-gray-600 mb-4">
+                    Valor mínimo: R$ {stripeSettings.stripe_minimum_amount}
+                  </p>
+                  <Button
+                    variant="secondary"
+                    onClick={handleStripeDonation}
+                    className="flex items-center justify-center gap-2"
+                    disabled={(!selectedAmount && !customAmount) || isProcessingStripe || !donorInfo.email}
+                  >
+                    {isProcessingStripe ? (
+                      <Loader className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <CreditCard className="h-4 w-4" />
+                    )}
+                    {isProcessingStripe ? 'Processando...' : 'Doar com Cartão'}
+                    {(selectedAmount || customAmount) && (
+                      <span>- R$ {selectedAmount || customAmount}</span>
+                    )}
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Processamento seguro via Stripe • SSL Criptografado
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="text-center p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-yellow-800 font-medium mb-2">🚧 Em Desenvolvimento</p>
+                <p className="text-yellow-800 font-medium mb-2">💳 Stripe Desabilitado</p>
                 <p className="text-yellow-700 text-sm">
-                  Estamos preparando a integração com cartão de crédito para oferecer mais facilidade nas doações.
+                  Configure o Stripe no painel administrativo para habilitar doações via cartão de crédito.
                 </p>
               </div>
             )}

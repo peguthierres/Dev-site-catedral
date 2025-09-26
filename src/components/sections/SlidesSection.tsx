@@ -74,17 +74,17 @@ export const SlidesSection: React.FC = () => {
         const defaultSlides: Slide[] = [
           {
             id: '1',
-            title: 'Seja bem-vindo(a)!',
-            description: 'A Catedral de São Miguel Arcanjo',
-            image_url: '/slides/img01.jpg',
+            title: '40 Anos de Fé e Comunhão',
+            description: 'Celebrando quatro décadas de bênçãos, milagres e união em Cristo',
+            image_url: 'https://imgur.com/gallery/catedral-imagens-z0SxNb1#iNThaz9',
             order_index: 0,
             is_active: true,
             created_at: new Date().toISOString()
           },
           {
             id: '2',
-            title: 'Estamos no coração de São Miguel',
-            description: 'Aproveite e nos faça uma visita.',
+            title: 'Nossa Comunidade Unida',
+            description: 'Fiéis de todas as idades unidos pela fé no Senhor Santo Cristo dos Milagres',
             image_url: '/slides/img02.jpg',
             order_index: 1,
             is_active: true,
@@ -92,9 +92,9 @@ export const SlidesSection: React.FC = () => {
           },
           {
             id: '3',
-            title: 'Acompanhe Nossa Programação',
-            description: 'Todas as nossas atividades em um só lugar.',
-            image_url: '/slides/img03.png',
+            title: 'Tradição e Modernidade',
+            description: 'Preservando nossa rica tradição enquanto abraçamos o futuro com esperança',
+            image_url: '/slides/img01.png',
             order_index: 2,
             is_active: true,
             created_at: new Date().toISOString()

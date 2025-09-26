@@ -19,7 +19,9 @@ import { AlbumManager } from './AlbumManager';
 import { ThemeCustomizer } from './ThemeCustomizer';
 import { CapelaManager } from './CapelaManager';
 import { supabase } from '../../lib/supabase';
-import { Palette, Building } from 'lucide-react';
+import { Palette, Building, CreditCard } from 'lucide-react';
+import { StripeSettings } from './StripeSettings';
+import { DonationManager } from './DonationManager';
 import toast from 'react-hot-toast';
 
 interface AdminPanelProps {
@@ -32,7 +34,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const tabs = [
     { id: 'parish', label: 'Informações da Paróquia', icon: FileText },
     { id: 'capela', label: 'Capela São Miguel', icon: Church },
-    { id: 'capela-donation', label: 'Doações da Capela', icon: Heart },
+    { id: 'stripe', label: 'Configurações Stripe', icon: CreditCard },
+    { id: 'donations', label: 'Gerenciar Doações', icon: Heart },
     { id: 'theme', label: 'Personalizar Cores', icon: Palette },
     { id: 'cloudinary', label: 'Cloudinary', icon: Settings },
     { id: 'popups', label: 'Pop-ups Urgentes', icon: Calendar },
@@ -64,8 +67,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         return <ParishManager />;
       case 'capela':
         return <CapelaManager />;
-      case 'capela-donation':
-        return <CapelaManager />; // Reutiliza o CapelaManager que agora inclui doações
+      case 'stripe':
+        return <StripeSettings />;
+      case 'donations':
+        return <DonationManager />;
       case 'theme':
         return <ThemeCustomizer />;
       case 'cloudinary':

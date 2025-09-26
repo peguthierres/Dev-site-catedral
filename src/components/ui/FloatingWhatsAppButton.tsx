@@ -37,7 +37,7 @@ export const FloatingWhatsAppButton: React.FC<FloatingWhatsAppButtonProps> = ({ 
           className="w-14 h-14 bg-green-500 hover:bg-green-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          title="Fale conosco no WhatsApp"
+          title="WhatsApp"
         >
           <svg 
             className="h-8 w-8 text-white group-hover:scale-110 transition-transform duration-200" 
@@ -67,7 +67,7 @@ export const FloatingWhatsAppButton: React.FC<FloatingWhatsAppButtonProps> = ({ 
           className="w-14 h-14 bg-green-500 hover:bg-green-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          title="Fale conosco no WhatsApp"
+          title="WhatsApp"
         >
           {/* Ícone oficial do WhatsApp */}
           <svg 
@@ -88,7 +88,7 @@ export const FloatingWhatsAppButton: React.FC<FloatingWhatsAppButtonProps> = ({ 
           animate={{ opacity: 1, x: 0 }}
           className="absolute left-16 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
         >
-          Olá!
+          Olá
           <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800 rotate-45"></div>
         </motion.div>
       </motion.div>
