@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Save, Church, Image as ImageIcon, Upload, Eye, EyeOff, Building, BookOpen, Heart, Calendar, DollarSign, CreditCard, Star, Phone, Mail, Clock, Gift, Shield, Info } from 'lucide-react';
+import { Save, Church, Image as ImageIcon, Upload, Eye, EyeOff, Building, BookOpen, Heart, Calendar, DollarSign, CreditCard, Star, Phone, Mail, Clock, Gift, Shield, Info, User } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { FileUpload } from '../ui/FileUpload';
